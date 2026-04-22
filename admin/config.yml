@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pure Home Store — Admin CMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F0F2F5;--sidebar:#111827;--sidebar-hover:#1F2937;--sidebar-active:#065F46;
+  --white:#FFFFFF;--border:#E5E7EB;--text:#111827;--text2:#6B7280;
+  --green:#059669;--green-lt:#D1FAE5;--red:#DC2626;--red-lt:#FEE2E2;
+  --yellow:#D97706;--yellow-lt:#FEF3C7;--blue:#2563EB;--blue-lt:#DBEAFE;
+  --purple:#7C3AED;--purple-lt:#EDE9FE;--orange:#EA580C;--orange-lt:#FFEDD5;
+  --radius:10px;--shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);
+  --shadow-lg:0 10px 15px rgba(0,0,0,.1),0 4px 6px rgba(0,0,0,.05);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+
+/* ── LOGIN ── */
+#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#111827 0%,#065F46 100%);display:flex;align-items:center;justify-content:center;z-index:9999}
+.login-card{background:#fff;border-radius:16px;padding:2.5rem;width:380px;box-shadow:var(--shadow-lg)}
+.login-logo{text-align:center;margin-bottom:1.5rem}
+.login-logo h1{font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--text)}
+.login-logo h1 span{color:var(--green)}
+.login-logo p{color:var(--text2);font-size:.82rem;margin-top:.3rem}
+.login-card h2{font-size:1.1rem;font-weight:600;margin-bottom:1.2rem;text-align:center}
+.login-field{margin-bottom:1rem}
+.login-field label{display:block;font-size:.75rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.login-field input{width:100%;padding:.75rem 1rem;border:1.5px solid var(--border);border-radius:var(--radius);font-size:.9rem;font-family:inherit;outline:none;transition:border-color .2s}
+.login-field input:focus{border-color:var(--green)}
+.login-btn{width:100%;background:var(--green);color:#fff;border:none;padding:.85rem;border-radius:var(--radius);font-size:.9rem;font-weight:600;cursor:pointer;transition:background .2s;font-family:inherit}
+.login-btn:hover{background:#047857}
+.login-err{color:var(--red);font-size:.78rem;text-align:center;margin-top:.6rem;display:none}
+.login-hint{color:var(--text2);font-size:.72rem;text-align:center;margin-top:.8rem}
+
+/* ── LAYOUT ── */
+#app{display:none;height:100vh;flex-direction:row}
+#app.active{display:flex}
+.sidebar{width:250px;background:var(--sidebar);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* ── SIDEBAR ── */
+.s-logo{padding:1.4rem 1.2rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.s-logo h2{font-family:'Playfair Display',serif;font-size:1.15rem;color:#fff;font-weight:700}
+.s-logo h2 span{color:#34D399}
+.s-logo p{color:rgba(255,255,255,.35);font-size:.68rem;margin-top:.2rem}
+.s-nav{flex:1;padding:.8rem 0}
+.s-section{padding:.4rem 1rem .3rem;font-size:.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.25);margin-top:.4rem}
+.s-item{display:flex;align-items:center;gap:.65rem;padding:.65rem 1rem;cursor:pointer;transition:all .18s;color:rgba(255,255,255,.55);border-left:3px solid transparent;font-size:.82rem;font-weight:500;position:relative}
+.s-item:hover{background:var(--sidebar-hover);color:rgba(255,255,255,.85)}
+.s-item.active{background:rgba(5,150,105,.15);color:#34D399;border-left-color:#34D399}
+.s-item .ico{font-size:.95rem;width:16px;text-align:center;flex-shrink:0}
+.s-badge{background:var(--red);color:#fff;font-size:.6rem;font-weight:700;padding:.1rem .4rem;border-radius:10px;margin-left:auto}
+.s-footer{padding:1rem;border-top:1px solid rgba(255,255,255,.06)}
+.s-user{display:flex;align-items:center;gap:.6rem;margin-bottom:.7rem}
+.s-avatar{width:32px;height:32px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0}
+.s-user-info p{color:#fff;font-size:.78rem;font-weight:600}
+.s-user-info span{color:rgba(255,255,255,.35);font-size:.65rem}
+.s-logout{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.5);padding:.5rem;border-radius:8px;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s}
+.s-logout:hover{background:rgba(255,255,255,.1);color:#fff}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:var(--shadow)}
+.topbar-left h1{font-size:1.05rem;font-weight:700}
+.topbar-left p{color:var(--text2);font-size:.75rem;margin-top:.1rem}
+.topbar-right{display:flex;gap:.6rem;align-items:center}
+.tb-btn{padding:.48rem 1rem;border-radius:8px;font-family:inherit;font-size:.78rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--white);color:var(--text);transition:all .18s}
+.tb-btn:hover{background:var(--bg)}
+.tb-btn.primary{background:var(--green);color:#fff;border-color:var(--green)}
+.tb-btn.primary:hover{background:#047857}
+.tb-btn.danger{background:var(--red);color:#fff;border-color:var(--red)}
+
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;padding:1.5rem}
+.panel{display:none}
+.panel.active{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── CARDS ── */
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.3rem;box-shadow:var(--shadow)}
+.card-title{font-size:.88rem;font-weight:700;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.2rem}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem}
+.gap{margin-bottom:1.2rem}
+
+/* ── STAT CARDS ── */
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;box-shadow:var(--shadow)}
+.stat-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.8rem}
+.stat-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.stat-val{font-size:1.7rem;font-weight:700;font-family:'Playfair Display',serif;line-height:1}
+.stat-lbl{font-size:.75rem;color:var(--text2);margin-top:.25rem}
+.stat-chg{font-size:.72rem;font-weight:600;margin-top:.4rem}
+.chg-up{color:var(--green)}
+.chg-neutral{color:var(--text2)}
+
+/* ── FORM ELEMENTS ── */
+.f-group{margin-bottom:1rem}
+.f-label{display:block;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--text2);margin-bottom:.38rem}
+.f-input{width:100%;padding:.7rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:.85rem;outline:none;background:#fff;transition:border-color .2s;color:var(--text)}
+.f-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(5,150,105,.1)}
+.f-textarea{width:100%;padding:.7rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:.85rem;outline:none;resize:vertical;min-height:90px;background:#fff;transition:border-color .2s;line-height:1.6}
+.f-textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(5,150,105,.1)}
+.f-select{width:100%;padding:.7rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:.85rem;outline:none;background:#fff;cursor:pointer}
+.f-select:focus{border-color:var(--green)}
+.f-hint{font-size:.72rem;color:var(--text2);margin-top:.3rem}
+
+/* ── BUTTONS ── */
+.btn{padding:.6rem 1.2rem;border-radius:8px;font-family:inherit;font-size:.82rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--white);color:var(--text);transition:all .18s}
+.btn:hover{background:var(--bg)}
+.btn-primary{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-primary:hover{background:#047857}
+.btn-danger{background:var(--red);color:#fff;border-color:var(--red)}
+.btn-danger:hover{background:#B91C1C}
+.btn-blue{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-sm{padding:.38rem .8rem;font-size:.75rem}
+.btn-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.5rem}
+
+/* ── TABLES ── */
+.table-wrap{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.table-header{padding:.9rem 1.2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:#FAFAFA}
+.table-header h3{font-size:.88rem;font-weight:700}
+table{width:100%;border-collapse:collapse}
+thead th{background:#F9FAFB;padding:.65rem 1rem;text-align:left;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);border-bottom:1px solid var(--border)}
+tbody td{padding:.8rem 1rem;font-size:.82rem;border-bottom:1px solid #F3F4F6;vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:#F9FAFB}
+.t-img{width:38px;height:38px;object-fit:cover;border-radius:6px;background:#f3f4f6}
+.t-name{font-weight:600;color:var(--text)}
+.t-sub{font-size:.72rem;color:var(--text2);margin-top:.1rem}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:.25rem;padding:.2rem .65rem;border-radius:50px;font-size:.68rem;font-weight:700}
+.badge-green{background:var(--green-lt);color:#065F46}
+.badge-red{background:var(--red-lt);color:#991B1B}
+.badge-yellow{background:var(--yellow-lt);color:#92400E}
+.badge-blue{background:var(--blue-lt);color:#1E40AF}
+.badge-purple{background:var(--purple-lt);color:#5B21B6}
+
+/* ── TOGGLE ── */
+.toggle-wrap{display:flex;align-items:center;justify-content:space-between;padding:.8rem 0;border-bottom:1px solid var(--border)}
+.toggle-wrap:last-child{border-bottom:none}
+.toggle-info h4{font-size:.85rem;font-weight:600}
+.toggle-info p{font-size:.75rem;color:var(--text2);margin-top:.15rem}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:#D1D5DB;border-radius:24px;cursor:pointer;transition:.3s}
+.toggle-slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s}
+.toggle input:checked+.toggle-slider{background:var(--green)}
+.toggle input:checked+.toggle-slider:before{transform:translateX(20px)}
+
+/* ── TABS ── */
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:1.3rem;gap:.2rem}
+.tab{padding:.6rem 1rem;font-size:.82rem;font-weight:600;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .18s;border-radius:6px 6px 0 0}
+.tab:hover{color:var(--text);background:#F9FAFB}
+.tab.active{color:var(--green);border-bottom-color:var(--green)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ── SEARCH ── */
+.search-box{padding:.58rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:.82rem;outline:none;width:220px;background:#fff}
+.search-box:focus{border-color:var(--green)}
+
+/* ── SEO METER ── */
+.seo-score{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.seo-bar{flex:1;height:8px;background:#E5E7EB;border-radius:4px;overflow:hidden}
+.seo-fill{height:100%;border-radius:4px;transition:width .5s;background:var(--green)}
+.seo-num{font-size:.8rem;font-weight:700;min-width:28px;text-align:right}
+
+/* ── IMAGE UPLOAD ── */
+.img-upload-area{border:2px dashed var(--border);border-radius:var(--radius);padding:1.5rem;text-align:center;cursor:pointer;transition:all .2s;background:#FAFAFA}
+.img-upload-area:hover{border-color:var(--green);background:#F0FDF4}
+.img-upload-area p{color:var(--text2);font-size:.82rem;margin-top:.4rem}
+.img-previews{display:flex;gap:.6rem;margin-top:.7rem;flex-wrap:wrap}
+.img-preview-item{position:relative;width:80px;height:80px}
+.img-preview-item img{width:100%;height:100%;object-fit:cover;border-radius:8px;border:2px solid var(--border)}
+.img-remove{position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* ── EMAIL TEMPLATE ── */
+.email-tpl{background:#F9FAFB;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.email-tpl-header{background:#111827;color:#fff;padding:.8rem 1rem;font-size:.8rem;font-weight:600}
+.email-tpl-body{padding:1rem;font-size:.82rem;line-height:1.7}
+.email-tpl-footer{background:#F3F4F6;padding:.6rem 1rem;font-size:.7rem;color:var(--text2);border-top:1px solid var(--border)}
+
+/* ── ORDER DETAIL MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:16px;padding:1.8rem;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;position:relative}
+.modal h2{font-size:1.1rem;font-weight:700;margin-bottom:1.2rem}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text2);padding:.2rem}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:#111827;color:#fff;padding:.85rem 1.3rem;border-radius:10px;font-size:.82rem;font-weight:500;z-index:9998;transform:translateY(80px);opacity:0;transition:all .3s;max-width:320px;box-shadow:var(--shadow-lg)}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:#065F46}
+.toast.error{background:#991B1B}
+.toast.info{background:#1E40AF}
+
+/* ── MISC ── */
+.divider{border:none;border-top:1px solid var(--border);margin:1.2rem 0}
+.text-sm{font-size:.78rem;color:var(--text2);line-height:1.6}
+.text-green{color:var(--green);font-weight:700}
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--text2)}
+.empty-state .empty-icon{font-size:3rem;margin-bottom:.8rem}
+.empty-state p{font-size:.88rem}
+.profit-box{background:var(--green-lt);border-radius:8px;padding:.8rem;font-size:.82rem;display:none}
+.profit-box strong{color:#065F46}
+.char-counter{font-size:.7rem;color:var(--text2);text-align:right;margin-top:.2rem}
+.red-text{color:var(--red);font-size:.7rem;text-align:right}
+.green-text{color:var(--green);font-size:.7rem;text-align:right}
+.section-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin-bottom:.8rem;display:flex;align-items:center;gap:.4rem}
+.info-box{background:var(--blue-lt);border:1px solid #BFDBFE;border-radius:8px;padding:.85rem;font-size:.8rem;color:#1E40AF;margin-bottom:1rem;line-height:1.6}
+.warn-box{background:var(--yellow-lt);border:1px solid #FDE68A;border-radius:8px;padding:.85rem;font-size:.8rem;color:#92400E;margin-bottom:1rem;line-height:1.6}
+.payment-provider{border:1.5px solid var(--border);border-radius:var(--radius);padding:1.1rem;margin-bottom:.8rem;transition:border-color .2s}
+.payment-provider.enabled{border-color:var(--green);background:#F0FDF4}
+.payment-provider-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+.payment-provider-title{font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:.5rem}
+.payment-provider-fields{display:none;padding-top:.8rem;border-top:1px solid var(--border);margin-top:.8rem}
+.payment-provider.enabled .payment-provider-fields{display:block}
+
+@media(max-width:900px){
+  .sidebar{width:200px}
+  .grid-4{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <h1>Pure<span>Home</span> Store</h1>
+      <p>Admin Content Management System</p>
+    </div>
+    <h2>🔐 Sign in to Dashboard</h2>
+    <div class="login-field"><label>Username</label><input type="text" id="l-user" value="admin" placeholder="admin"></div>
+    <div class="login-field"><label>Password</label><input type="password" id="l-pass" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="login-btn" onclick="doLogin()">Login to CMS</button>
+    <div class="login-err" id="l-err">❌ Incorrect username or password</div>
+    <p class="login-hint">Default: admin / purehome123</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="s-logo">
+      <h2>Pure<span>Home</span> CMS</h2>
+      <p>Store Admin Panel</p>
+    </div>
+    <nav class="s-nav">
+      <div class="s-section">Overview</div>
+      <div class="s-item active" onclick="go('dashboard')"><span class="ico">📊</span>Dashboard</div>
+      <div class="s-item" onclick="go('orders')"><span class="ico">📦</span>Orders<span class="s-badge" id="orders-badge" style="display:none">0</span></div>
+      <div class="s-section">Products</div>
+      <div class="s-item" onclick="go('products')"><span class="ico">🛍️</span>All Products</div>
+      <div class="s-item" onclick="go('add-product')"><span class="ico">➕</span>Add Product</div>
+      <div class="s-section">Content</div>
+      <div class="s-item" onclick="go('blog')"><span class="ico">📝</span>Blog Posts</div>
+      <div class="s-item" onclick="go('add-blog')"><span class="ico">✏️</span>New Blog Post</div>
+      <div class="s-section">Marketing</div>
+      <div class="s-item" onclick="go('email-marketing')"><span class="ico">📧</span>Email Marketing</div>
+      <div class="s-section">Settings</div>
+      <div class="s-item" onclick="go('seo')"><span class="ico">🔍</span>SEO Settings</div>
+      <div class="s-item" onclick="go('email-settings')"><span class="ico">✉️</span>Email & Templates</div>
+      <div class="s-item" onclick="go('payments')"><span class="ico">💳</span>Payment Gateways</div>
+      <div class="s-item" onclick="go('store-settings')"><span class="ico">⚙️</span>Store Settings</div>
+    </nav>
+    <div class="s-footer">
+      <div class="s-user">
+        <div class="s-avatar">A</div>
+        <div class="s-user-info"><p id="s-username">Admin</p><span>purehomestore.com.au</span></div>
+      </div>
+      <button class="s-logout" onclick="doLogout()">← Logout</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1 id="page-title">Dashboard</h1>
+        <p id="page-sub">Welcome back to your store</p>
+      </div>
+      <div class="topbar-right">
+        <button class="tb-btn" onclick="go('add-product')">+ Add Product</button>
+        <button class="tb-btn primary" id="top-action-btn">Save Changes</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ═══ DASHBOARD ═══ -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="grid-4 gap">
+          <div class="stat-card">
+            <div class="stat-top"><div><div class="stat-val" id="d-rev">$0</div><div class="stat-lbl">Total Revenue</div></div><div class="stat-icon" style="background:var(--green-lt)">💰</div></div>
+            <div class="stat-chg chg-neutral" id="d-rev-chg">Start marketing to earn!</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><div><div class="stat-val" id="d-orders">0</div><div class="stat-lbl">Total Orders</div></div><div class="stat-icon" style="background:var(--blue-lt)">📦</div></div>
+            <div class="stat-chg chg-neutral">Ready to receive orders</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><div><div class="stat-val" id="d-prods">0</div><div class="stat-lbl">Live Products</div></div><div class="stat-icon" style="background:var(--purple-lt)">🛍️</div></div>
+            <div class="stat-chg chg-up" id="d-prod-chg">✅ All active</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><div><div class="stat-val">5K</div><div class="stat-lbl">Email Leads</div></div><div class="stat-icon" style="background:var(--orange-lt)">📧</div></div>
+            <div class="stat-chg chg-up">🚀 Ready to send!</div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <div class="table-wrap">
+              <div class="table-header"><h3>Recent Orders</h3><span class="badge badge-blue" id="d-pending-count">0 pending</span></div>
+              <table><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th></tr></thead>
+              <tbody id="d-orders-tbody"><tr><td colspan="4"><div class="empty-state"><div class="empty-icon">📭</div><p>No orders yet</p></div></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">🚀 Quick Actions</div>
+              <div style="display:flex;flex-direction:column;gap:.6rem">
+                <button class="btn btn-primary" style="width:100%;justify-content:flex-start" onclick="go('add-product')">➕ Add New Product</button>
+                <button class="btn" style="width:100%;justify-content:flex-start" onclick="go('add-blog')">✏️ Write Blog Post</button>
+                <button class="btn" style="width:100%;justify-content:flex-start" onclick="go('email-marketing')">📧 Create Email Campaign</button>
+                <button class="btn" style="width:100%;justify-content:flex-start" onclick="go('seo')">🔍 Update SEO Settings</button>
+                <button class="btn" style="width:100%;justify-content:flex-start" onclick="go('payments')">💳 Connect Payments</button>
+              </div>
+            </div>
+            <div class="card" style="margin-top:1.2rem">
+              <div class="card-title">✅ Setup Checklist</div>
+              <div id="setup-checklist"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ ORDERS ═══ -->
+      <div class="panel" id="panel-orders">
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>All Orders</h3>
+            <div style="display:flex;gap:.6rem;align-items:center">
+              <input class="search-box" placeholder="🔍 Search orders..." oninput="searchOrders(this.value)">
+              <select class="f-select" style="width:auto;padding:.55rem .8rem" onchange="filterOrderStatus(this.value)">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="processing">Processing</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              <button class="btn btn-sm" onclick="exportOrdersCSV()">📥 Export CSV</button>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th>Order ID</th><th>Date</th><th>Customer</th><th>Products</th><th>Total</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="orders-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ═══ PRODUCTS LIST ═══ -->
+      <div class="panel" id="panel-products">
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Products (<span id="prod-count">0</span>)</h3>
+            <div style="display:flex;gap:.6rem;align-items:center">
+              <input class="search-box" placeholder="🔍 Search products..." oninput="searchProds(this.value)">
+              <select class="f-select" style="width:auto;padding:.55rem .8rem" onchange="filterProdCat(this.value)">
+                <option value="">All Categories</option>
+                <option value="massage">Massage</option>
+                <option value="air">Air Purifiers</option>
+                <option value="water">Water Filters</option>
+              </select>
+              <button class="btn btn-primary btn-sm" onclick="go('add-product')">+ Add Product</button>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th>Image</th><th>Product Name</th><th>Category</th><th>Sell Price</th><th>Cost</th><th>Profit</th><th>Delivery</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="prods-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ═══ ADD/EDIT PRODUCT ═══ -->
+      <div class="panel" id="panel-add-product">
+        <input type="hidden" id="ep-id">
+        <div class="grid-2" style="align-items:start">
+          <div>
+            <div class="card gap">
+              <div class="card-title">📦 Product Information</div>
+              <div class="f-group"><label class="f-label">Product Name *</label><input class="f-input" id="ep-name" placeholder="e.g. HOMASA Neck Shoulder Massager Portable"></div>
+              <div class="grid-2">
+                <div class="f-group"><label class="f-label">Category *</label>
+                  <select class="f-select" id="ep-cat">
+                    <option value="massage">💆 Massage & Recovery</option>
+                    <option value="air">🌬️ Air Purifiers</option>
+                    <option value="water">💧 Water Filters</option>
+                  </select>
+                </div>
+                <div class="f-group"><label class="f-label">Badge Label</label><input class="f-input" id="ep-badge" placeholder="⭐ Best Seller"></div>
+              </div>
+              <div class="f-group"><label class="f-label">Short Description (shown on card)</label><input class="f-input" id="ep-short" placeholder="One line summary..."><div class="char-counter" id="ep-short-count">0/120</div></div>
+              <div class="f-group"><label class="f-label">Full Description</label><textarea class="f-textarea" id="ep-desc" rows="4" placeholder="Detailed product description for product page..."></textarea></div>
+              <div class="f-group"><label class="f-label">Key Features (one per line)</label><textarea class="f-textarea" id="ep-feats" rows="6" placeholder="6 speed settings&#10;8 interchangeable attachments&#10;6hr battery life&#10;CE certified&#10;3–10 day AU delivery"></textarea></div>
+              <div class="f-group"><label class="f-label">AliExpress Product Link</label><input class="f-input" id="ep-link" placeholder="https://www.aliexpress.com/item/..."></div>
+              <div class="f-group"><label class="f-label">Shipping Time to Australia</label><input class="f-input" id="ep-ship" placeholder="e.g. 3–10 business days"></div>
+            </div>
+            <div class="card gap">
+              <div class="card-title">🖼️ Product Images</div>
+              <div class="f-group"><label class="f-label">Image URL 1 (Main Image) *</label><input class="f-input" id="ep-img1" placeholder="https://ae-pic-a1.aliexpress-media.com/..." oninput="updateImgPreview()"></div>
+              <div class="f-group"><label class="f-label">Image URL 2</label><input class="f-input" id="ep-img2" placeholder="https://..." oninput="updateImgPreview()"></div>
+              <div class="f-group"><label class="f-label">Image URL 3</label><input class="f-input" id="ep-img3" placeholder="https://..." oninput="updateImgPreview()"></div>
+              <div class="img-previews" id="ep-img-preview"></div>
+            </div>
+            <div class="card gap">
+              <div class="card-title">🔍 SEO for This Product</div>
+              <div class="f-group"><label class="f-label">SEO Title <span style="font-weight:400;text-transform:none">(50–60 chars recommended)</span></label><input class="f-input" id="ep-seo-title" placeholder="Buy Massage Gun Australia | Pure Home Store" oninput="updateSeoCounter('ep-seo-title','ep-seo-t-c',60)"><div class="char-counter" id="ep-seo-t-c">0/60</div></div>
+              <div class="f-group"><label class="f-label">Meta Description <span style="font-weight:400;text-transform:none">(150–160 chars)</span></label><textarea class="f-textarea" id="ep-seo-desc" rows="2" placeholder="Buy premium massage gun online in Australia. Fast 3-10 day delivery, free shipping on orders over $50..." oninput="updateSeoCounter('ep-seo-desc','ep-seo-d-c',160)"></textarea><div class="char-counter" id="ep-seo-d-c">0/160</div></div>
+            </div>
+          </div>
+          <div>
+            <div class="card gap">
+              <div class="card-title">💰 Pricing & Profit</div>
+              <div class="f-group"><label class="f-label">Selling Price (AUD) *</label><input class="f-input" id="ep-price" type="number" step="0.01" placeholder="119.00" oninput="calcProdProfit()"></div>
+              <div class="f-group"><label class="f-label">Original / Was Price (AUD)</label><input class="f-input" id="ep-old" type="number" step="0.01" placeholder="189.00"></div>
+              <div class="f-group"><label class="f-label">Your AliExpress Cost (AUD)</label><input class="f-input" id="ep-cost" type="number" step="0.01" placeholder="35.00" oninput="calcProdProfit()"></div>
+              <div class="f-group"><label class="f-label">Shipping Cost to Add (AUD)</label><input class="f-input" id="ep-ship-cost" type="number" step="0.01" placeholder="0 (if free shipping)"></div>
+              <div class="profit-box" id="ep-profit-box">
+                <div>💰 Profit per sale: <strong id="ep-profit-val">$0</strong></div>
+                <div style="margin-top:.3rem">📊 Margin: <strong id="ep-margin-val">0%</strong></div>
+                <div style="margin-top:.3rem">📦 Total Cost: <strong id="ep-totalcost-val">$0</strong></div>
+              </div>
+            </div>
+            <div class="card gap">
+              <div class="card-title">📊 Status</div>
+              <div class="f-group"><label class="f-label">Visibility</label>
+                <select class="f-select" id="ep-status">
+                  <option value="active">✅ Active — Visible in store</option>
+                  <option value="draft">📝 Draft — Hidden from store</option>
+                </select>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">📋 Product Reviews</div>
+              <div id="ep-reviews-list"></div>
+              <button class="btn btn-sm" onclick="addReviewField()" style="margin-top:.6rem">+ Add Review</button>
+            </div>
+            <div class="btn-row" style="margin-top:.8rem">
+              <button class="btn btn-primary" onclick="saveProduct()">💾 Save Product</button>
+              <button class="btn" onclick="go('products')">Cancel</button>
+              <button class="btn btn-danger btn-sm" id="ep-del-btn" onclick="deleteCurrentProduct()" style="display:none">🗑️ Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ BLOG LIST ═══ -->
+      <div class="panel" id="panel-blog">
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Blog Posts (<span id="blog-count">0</span>)</h3>
+            <button class="btn btn-primary btn-sm" onclick="go('add-blog')">+ New Post</button>
+          </div>
+          <table>
+            <thead><tr><th>Featured Image</th><th>Title</th><th>Category</th><th>Author</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="blog-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ═══ ADD/EDIT BLOG ═══ -->
+      <div class="panel" id="panel-add-blog">
+        <input type="hidden" id="eb-id">
+        <div class="grid-2" style="align-items:start">
+          <div>
+            <div class="card gap">
+              <div class="card-title">✏️ Post Content</div>
+              <div class="f-group"><label class="f-label">Post Title *</label><input class="f-input" id="eb-title" placeholder="e.g. 5 Benefits of Using a Massage Gun Daily" oninput="autoFillBlogSeo()"></div>
+              <div class="f-group"><label class="f-label">Content *</label><textarea class="f-textarea" id="eb-content" rows="14" placeholder="Write your blog post here...&#10;&#10;Use paragraphs, tips, lists.&#10;&#10;Add your health & wellness tips, product guides, how-to articles etc.&#10;&#10;This will appear on the blog post page."></textarea></div>
+              <div class="f-group"><label class="f-label">Excerpt (shown on blog listing card)</label><textarea class="f-textarea" id="eb-excerpt" rows="2" placeholder="Short summary shown when listing blog posts..."></textarea></div>
+            </div>
+          </div>
+          <div>
+            <div class="card gap">
+              <div class="card-title">🏷️ Post Details</div>
+              <div class="f-group"><label class="f-label">Category</label><input class="f-input" id="eb-cat" placeholder="e.g. Health & Wellness"></div>
+              <div class="f-group"><label class="f-label">Author Name</label><input class="f-input" id="eb-author" placeholder="Pure Home Team" value="Pure Home Team"></div>
+              <div class="f-group"><label class="f-label">Featured Image URL</label><input class="f-input" id="eb-img" placeholder="https://..." oninput="previewBlogImg()"></div>
+              <div id="eb-img-wrap" style="display:none;height:140px;border-radius:8px;overflow:hidden;background:#f3f4f6;margin-bottom:.5rem"><img id="eb-img-prev" style="width:100%;height:100%;object-fit:cover" src="" alt=""></div>
+              <div class="f-group"><label class="f-label">Reading Time</label><input class="f-input" id="eb-read" placeholder="e.g. 5 min read"></div>
+            </div>
+            <div class="card gap">
+              <div class="card-title">🔍 SEO for This Post</div>
+              <div class="f-group"><label class="f-label">SEO Title</label><input class="f-input" id="eb-seo-title" placeholder="Blog SEO title..." oninput="updateSeoCounter('eb-seo-title','eb-seo-t-c',60)"><div class="char-counter" id="eb-seo-t-c">0/60</div></div>
+              <div class="f-group"><label class="f-label">Meta Description</label><textarea class="f-textarea" id="eb-seo-desc" rows="2" placeholder="Blog post meta description..." oninput="updateSeoCounter('eb-seo-desc','eb-seo-d-c',160)"></textarea><div class="char-counter" id="eb-seo-d-c">0/160</div></div>
+              <div class="f-group"><label class="f-label">Focus Keyword</label><input class="f-input" id="eb-keyword" placeholder="e.g. massage gun australia"></div>
+            </div>
+            <div class="card gap">
+              <div class="card-title">📊 Status</div>
+              <select class="f-select" id="eb-status"><option value="published">✅ Published</option><option value="draft">📝 Draft</option></select>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" onclick="saveBlog()">💾 Publish Post</button>
+              <button class="btn" onclick="go('blog')">Cancel</button>
+              <button class="btn btn-danger btn-sm" id="eb-del-btn" onclick="deleteCurBlog()" style="display:none">🗑️ Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ EMAIL MARKETING ═══ -->
+      <div class="panel" id="panel-email-marketing">
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('em','campaigns')">📋 Campaigns</div>
+          <div class="tab" onclick="switchTab('em','builder')">🔨 Email Builder</div>
+          <div class="tab" onclick="switchTab('em','sms')">📱 SMS Scripts</div>
+          <div class="tab" onclick="switchTab('em','leads')">👥 Leads (5,000)</div>
+        </div>
+        <!-- Campaigns -->
+        <div class="tab-panel active" id="em-campaigns">
+          <div class="table-wrap">
+            <div class="table-header"><h3>Saved Campaigns</h3><button class="btn btn-primary btn-sm" onclick="switchTab('em','builder');document.getElementById('ec-name').focus()">+ New Campaign</button></div>
+            <table><thead><tr><th>Name</th><th>Subject</th><th>Created</th><th>Actions</th></tr></thead>
+            <tbody id="campaigns-tbody"></tbody></table>
+          </div>
+        </div>
+        <!-- Builder -->
+        <div class="tab-panel" id="em-builder">
+          <div class="grid-2">
+            <div>
+              <div class="card">
+                <div class="card-title">📧 Campaign Builder</div>
+                <div class="f-group"><label class="f-label">Campaign Name</label><input class="f-input" id="ec-name" placeholder="e.g. AU Launch Campaign - Week 1"></div>
+                <div class="f-group"><label class="f-label">Subject Line *</label><input class="f-input" id="ec-subject" placeholder="Free AU Shipping This Week! 🚀" oninput="updateEmailPreview()"></div>
+                <div class="f-group"><label class="f-label">Greeting</label><input class="f-input" id="ec-greeting" placeholder="Hi [Name]," value="Hi [Name]," oninput="updateEmailPreview()"></div>
+                <div class="f-group"><label class="f-label">Email Body *</label><textarea class="f-textarea" id="ec-body" rows="7" placeholder="Write your email body here...&#10;&#10;Use [Name] to personalize with customer name.&#10;&#10;Tip: Keep it short, friendly, and include one clear offer." oninput="updateEmailPreview()"></textarea></div>
+                <div class="f-group"><label class="f-label">Call-to-Action Button Text</label><input class="f-input" id="ec-cta" placeholder="Shop Now — Free AU Shipping →" oninput="updateEmailPreview()"></div>
+                <div class="f-group"><label class="f-label">CTA Link URL</label><input class="f-input" id="ec-link" placeholder="https://purehomestore.com.au"></div>
+                <div class="f-group"><label class="f-label">Footer Note (optional)</label><input class="f-input" id="ec-footer" placeholder="Offer ends Sunday midnight. Free shipping on orders over $50."></div>
+                <div class="btn-row"><button class="btn btn-primary" onclick="saveCampaign()">💾 Save Campaign</button><button class="btn" onclick="clearCampaignForm()">Clear</button></div>
+              </div>
+            </div>
+            <div>
+              <div class="card">
+                <div class="card-title">👁️ Live Preview</div>
+                <div class="email-tpl">
+                  <div class="email-tpl-header">Pure Home Store &lt;noreply@purehomestore.com.au&gt;</div>
+                  <div class="email-tpl-body">
+                    <div style="text-align:center;padding:.8rem;background:#111827;color:#fff;border-radius:6px;margin-bottom:1rem;font-family:'Playfair Display',serif;font-size:1rem">PureHome Store</div>
+                    <p style="color:#888;font-size:.78rem;margin-bottom:.5rem">Subject: <strong id="prev-subject" style="color:#333">Your subject line here</strong></p>
+                    <hr style="border:none;border-top:1px solid #eee;margin:.6rem 0">
+                    <p id="prev-greeting" style="margin-bottom:.5rem;font-weight:600;font-size:.85rem">Hi [Name],</p>
+                    <div id="prev-body" style="white-space:pre-wrap;font-size:.83rem;line-height:1.7;color:#333">Your email body will appear here...</div>
+                    <div style="text-align:center;margin:1rem 0"><div id="prev-cta" style="display:inline-block;background:#059669;color:#fff;padding:.65rem 1.5rem;border-radius:50px;font-weight:700;font-size:.82rem">Shop Now</div></div>
+                    <p id="prev-footer" style="font-size:.72rem;color:#888;text-align:center"></p>
+                  </div>
+                  <div class="email-tpl-footer">© 2025 Pure Home Store · <a style="color:var(--text2)">Unsubscribe</a> · <a style="color:var(--text2)">Privacy Policy</a><br>Sent via your email platform (Brevo / Mailchimp)</div>
+                </div>
+              </div>
+              <div class="card" style="margin-top:1rem">
+                <div class="card-title">📨 How to Send to 5,000 Leads</div>
+                <div class="info-box" style="margin-bottom:0">
+                  <strong>Step 1:</strong> Save this campaign above<br>
+                  <strong>Step 2:</strong> Sign up at <strong>brevo.com</strong> (free — 300 emails/day)<br>
+                  <strong>Step 3:</strong> Import your 5,000 leads as contacts<br>
+                  <strong>Step 4:</strong> Copy this email content to Brevo's editor<br>
+                  <strong>Step 5:</strong> Schedule & send! 🚀
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- SMS -->
+        <div class="tab-panel" id="em-sms">
+          <div class="grid-2">
+            <div id="sms-scripts-list"></div>
+            <div>
+              <div class="card">
+                <div class="card-title">📱 How to Send SMS to 5,000 Leads</div>
+                <div style="font-size:.82rem;line-height:1.8;color:var(--text2)">
+                  <p><strong style="color:var(--text)">Best AU SMS Platforms:</strong></p>
+                  <p>• <strong>MessageMedia</strong> — Best for Australia, ~5c/SMS</p>
+                  <p>• <strong>Twilio</strong> — Cheapest, API-based</p>
+                  <p>• <strong>SMSala</strong> — Bulk SMS, very cheap</p>
+                  <br>
+                  <p><strong style="color:var(--text)">Cost to send 5,000 SMS:</strong></p>
+                  <p>~$250 AUD on MessageMedia</p>
+                  <p>~$100 AUD on Twilio</p>
+                  <br>
+                  <p><strong style="color:var(--text)">⚠️ Legal Requirement:</strong></p>
+                  <p>Under Australian Spam Act 2003, always include "Reply STOP to opt out" in every SMS. Only send to opted-in contacts.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Leads -->
+        <div class="tab-panel" id="em-leads">
+          <div class="card">
+            <div class="card-title">👥 Your 5,000 Solar Leads</div>
+            <div class="warn-box">⚠️ These are solar leads. Under the Australian Spam Act 2003, you can only market to them if they have consented to receive your marketing. Always include an unsubscribe option.</div>
+            <div class="grid-3">
+              <div class="stat-card"><div class="stat-val">5,000</div><div class="stat-lbl">Total Leads</div></div>
+              <div class="stat-card"><div class="stat-val" id="leads-emailed">0</div><div class="stat-lbl">Emailed</div></div>
+              <div class="stat-card"><div class="stat-val" id="leads-converted">0</div><div class="stat-lbl">Converted to Customers</div></div>
+            </div>
+            <div class="f-group" style="margin-top:1rem"><label class="f-label">Leads File Location</label><input class="f-input" id="leads-file" placeholder="e.g. Google Sheets link or file location..."></div>
+            <div class="f-group"><label class="f-label">Notes about your leads</label><textarea class="f-textarea" id="leads-notes" rows="3" placeholder="e.g. Collected from solar quote forms, Queensland area, homeowners..."></textarea></div>
+            <button class="btn btn-primary" onclick="saveLeadInfo()">💾 Save Lead Info</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SEO SETTINGS ═══ -->
+      <div class="panel" id="panel-seo">
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('seo','global')">🌐 Global SEO</div>
+          <div class="tab" onclick="switchTab('seo','home')">🏠 Home Page</div>
+          <div class="tab" onclick="switchTab('seo','shop')">🛍️ Shop Page</div>
+          <div class="tab" onclick="switchTab('seo','blog-seo')">📝 Blog</div>
+          <div class="tab" onclick="switchTab('seo','about-seo')">ℹ️ About</div>
+          <div class="tab" onclick="switchTab('seo','tracking')">📊 Tracking</div>
+        </div>
+        <!-- Global SEO -->
+        <div class="tab-panel active" id="seo-global">
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">🌐 Global Site SEO</div>
+              <div class="f-group"><label class="f-label">Site Title</label><input class="f-input" id="seo-site-title" placeholder="Pure Home Store — Premium Wellness Products Australia" oninput="updateSeoCounter('seo-site-title','seo-st-c',60)"><div class="char-counter" id="seo-st-c">0/60</div></div>
+              <div class="f-group"><label class="f-label">Default Meta Description</label><textarea class="f-textarea" id="seo-site-desc" rows="2" placeholder="Buy premium massage guns, air purifiers and water filters in Australia. Fast 3-20 day delivery, free shipping on orders over $50." oninput="updateSeoCounter('seo-site-desc','seo-sd-c',160)"></textarea><div class="char-counter" id="seo-sd-c">0/160</div></div>
+              <div class="f-group"><label class="f-label">Global Keywords</label><input class="f-input" id="seo-keywords" placeholder="massage gun australia, air purifier australia, water filter australia, pure home store"></div>
+              <div class="f-group"><label class="f-label">Business Name</label><input class="f-input" id="seo-biz-name" placeholder="Pure Home Store" value="Pure Home Store"></div>
+              <div class="f-group"><label class="f-label">Business Location</label><input class="f-input" id="seo-location" placeholder="Australia" value="Australia"></div>
+              <button class="btn btn-primary" onclick="saveSEO()">💾 Save Global SEO</button>
+            </div>
+            <div class="card">
+              <div class="card-title">📊 SEO Health Score</div>
+              <div id="seo-health-list"></div>
+              <hr class="divider">
+              <div class="card-title">💡 SEO Tips for Australia</div>
+              <div style="font-size:.8rem;line-height:1.8;color:var(--text2)">
+                <p>✅ Use "Australia" in your title tags</p>
+                <p>✅ Include city names (Sydney, Melbourne, Perth)</p>
+                <p>✅ Add schema markup for products</p>
+                <p>✅ Write blog posts targeting AU buyers</p>
+                <p>✅ Get backlinks from AU health sites</p>
+                <p>✅ Page speed matters — images should be &lt;200KB</p>
+                <p>✅ Mobile-first design (60% of AU traffic is mobile)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Page-specific SEO tabs -->
+        <div class="tab-panel" id="seo-home"><div class="card"><div class="card-title">🏠 Home Page SEO</div><div class="f-group"><label class="f-label">Page Title</label><input class="f-input" id="seo-home-title" placeholder="Pure Home Store — Massage Guns, Air Purifiers & Water Filters Australia" oninput="updateSeoCounter('seo-home-title','seo-ht-c',60)"><div class="char-counter" id="seo-ht-c">0/60</div></div><div class="f-group"><label class="f-label">Meta Description</label><textarea class="f-textarea" id="seo-home-desc" rows="2" placeholder="Australia's best massage guns, air purifiers and water filters. Fast delivery, free shipping over $50." oninput="updateSeoCounter('seo-home-desc','seo-hd-c',160)"></textarea><div class="char-counter" id="seo-hd-c">0/160</div></div><div class="f-group"><label class="f-label">H1 Tag</label><input class="f-input" id="seo-home-h1" placeholder="Premium Wellness Products for Australian Homes"></div><button class="btn btn-primary" onclick="savePageSEO('home')">💾 Save Home SEO</button></div></div>
+        <div class="tab-panel" id="seo-shop"><div class="card"><div class="card-title">🛍️ Shop Page SEO</div><div class="f-group"><label class="f-label">Page Title</label><input class="f-input" id="seo-shop-title" placeholder="Shop Massage Guns, Air Purifiers & Water Filters | Pure Home Store Australia" oninput="updateSeoCounter('seo-shop-title','seo-sht-c',60)"><div class="char-counter" id="seo-sht-c">0/60</div></div><div class="f-group"><label class="f-label">Meta Description</label><textarea class="f-textarea" id="seo-shop-desc" rows="2" placeholder="Shop our full range of wellness products. Free shipping across Australia on orders over $50." oninput="updateSeoCounter('seo-shop-desc','seo-shd-c',160)"></textarea><div class="char-counter" id="seo-shd-c">0/160</div></div><button class="btn btn-primary" onclick="savePageSEO('shop')">💾 Save Shop SEO</button></div></div>
+        <div class="tab-panel" id="seo-blog-seo"><div class="card"><div class="card-title">📝 Blog SEO</div><div class="f-group"><label class="f-label">Blog Page Title</label><input class="f-input" id="seo-blog-title" placeholder="Health & Wellness Blog | Pure Home Store Australia"></div><div class="f-group"><label class="f-label">Blog Meta Description</label><textarea class="f-textarea" id="seo-blog-desc" rows="2" placeholder="Tips and advice on massage therapy, air quality and water purification for Australian homes."></textarea></div><button class="btn btn-primary" onclick="savePageSEO('blog')">💾 Save Blog SEO</button></div></div>
+        <div class="tab-panel" id="seo-about-seo"><div class="card"><div class="card-title">ℹ️ About Page SEO</div><div class="f-group"><label class="f-label">About Page Title</label><input class="f-input" id="seo-about-title" placeholder="About Pure Home Store — Australia's Wellness Specialists"></div><div class="f-group"><label class="f-label">About Meta Description</label><textarea class="f-textarea" id="seo-about-desc" rows="2" placeholder="Learn about Pure Home Store — your trusted Australian source for premium wellness products."></textarea></div><button class="btn btn-primary" onclick="savePageSEO('about')">💾 Save About SEO</button></div></div>
+        <!-- Tracking -->
+        <div class="tab-panel" id="seo-tracking">
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">📊 Analytics & Tracking</div>
+              <div class="f-group"><label class="f-label">Google Analytics 4 Measurement ID</label><input class="f-input" id="seo-ga" placeholder="G-XXXXXXXXXX"><div class="f-hint">Get from analytics.google.com → Admin → Data Streams</div></div>
+              <div class="f-group"><label class="f-label">Google Search Console Verification</label><input class="f-input" id="seo-gsc" placeholder="Paste meta tag content..."><div class="f-hint">From Search Console → Verify ownership → HTML tag method</div></div>
+              <div class="f-group"><label class="f-label">Facebook Pixel ID</label><input class="f-input" id="seo-pixel" placeholder="XXXXXXXXXXXXXXXXXX"><div class="f-hint">From Facebook Ads Manager → Events Manager → Pixel</div></div>
+              <div class="f-group"><label class="f-label">TikTok Pixel ID (optional)</label><input class="f-input" id="seo-tiktok" placeholder="XXXXXXXXXXXXXXXXXX"></div>
+              <button class="btn btn-primary" onclick="saveTracking()">💾 Save Tracking Codes</button>
+            </div>
+            <div class="card">
+              <div class="card-title">🔗 Sitemap & Schema</div>
+              <div class="info-box">
+                <strong>Sitemap URL (after hosting):</strong><br>
+                https://purehomestore.com.au/sitemap.xml<br><br>
+                Submit to Google Search Console for faster indexing.
+              </div>
+              <div class="f-group"><label class="f-label">Business Schema Type</label><select class="f-select" id="seo-schema-type"><option value="OnlineStore">Online Store</option><option value="LocalBusiness">Local Business</option><option value="Organization">Organization</option></select></div>
+              <div class="f-group"><label class="f-label">ABN (for local business schema)</label><input class="f-input" id="seo-abn" placeholder="XX XXX XXX XXX"></div>
+              <button class="btn btn-primary" onclick="saveTracking()">💾 Save Schema</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ EMAIL SETTINGS ═══ -->
+      <div class="panel" id="panel-email-settings">
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('es','smtp')">📮 SMTP Setup</div>
+          <div class="tab" onclick="switchTab('es','order-confirm')">✅ Order Confirmation</div>
+          <div class="tab" onclick="switchTab('es','order-shipped')">🚚 Shipped Email</div>
+          <div class="tab" onclick="switchTab('es','welcome')">👋 Welcome Email</div>
+          <div class="tab" onclick="switchTab('es','abandoned')">🛒 Abandoned Cart</div>
+        </div>
+
+        <!-- SMTP -->
+        <div class="tab-panel active" id="es-smtp">
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">📮 Email Sending (SMTP)</div>
+              <div class="info-box">Connect your email so customers automatically get order emails. Recommended: Use <strong>Brevo (free)</strong> — 300 emails/day, includes SMTP.</div>
+              <div class="f-group"><label class="f-label">Email Platform</label>
+                <select class="f-select" id="smtp-platform" onchange="updateSmtpHelp()">
+                  <option value="brevo">Brevo (Sendinblue) — FREE</option>
+                  <option value="mailchimp">Mailchimp</option>
+                  <option value="sendgrid">SendGrid</option>
+                  <option value="gmail">Gmail SMTP</option>
+                  <option value="custom">Custom SMTP</option>
+                </select>
+              </div>
+              <div class="f-group"><label class="f-label">From Name</label><input class="f-input" id="smtp-name" placeholder="Pure Home Store" value="Pure Home Store"></div>
+              <div class="f-group"><label class="f-label">From Email</label><input class="f-input" id="smtp-email" placeholder="orders@purehomestore.com.au"></div>
+              <div class="f-group"><label class="f-label">Reply-To Email</label><input class="f-input" id="smtp-reply" placeholder="support@purehomestore.com.au"></div>
+              <div id="smtp-fields">
+                <div class="f-group"><label class="f-label">SMTP Host</label><input class="f-input" id="smtp-host" placeholder="smtp-relay.brevo.com"></div>
+                <div class="grid-2">
+                  <div class="f-group"><label class="f-label">SMTP Port</label><input class="f-input" id="smtp-port" placeholder="587" type="number"></div>
+                  <div class="f-group"><label class="f-label">Encryption</label><select class="f-select" id="smtp-enc"><option>TLS</option><option>SSL</option><option>None</option></select></div>
+                </div>
+                <div class="f-group"><label class="f-label">SMTP Username</label><input class="f-input" id="smtp-user" placeholder="your@email.com"></div>
+                <div class="f-group"><label class="f-label">SMTP Password / API Key</label><input class="f-input" id="smtp-pass" placeholder="API key or password" type="password"></div>
+              </div>
+              <button class="btn btn-primary" onclick="saveSMTP()">💾 Save SMTP Settings</button>
+            </div>
+            <div class="card">
+              <div class="card-title">📋 Quick Setup Guides</div>
+              <div id="smtp-help-box">
+                <div style="font-size:.82rem;line-height:1.8">
+                  <p><strong>Brevo (Recommended — Free)</strong></p>
+                  <p>1. Sign up at <strong>brevo.com</strong></p>
+                  <p>2. Go to: SMTP & API → SMTP → Generate Password</p>
+                  <p>3. Host: smtp-relay.brevo.com</p>
+                  <p>4. Port: 587 (TLS)</p>
+                  <p>5. Username: Your Brevo login email</p>
+                  <p>6. Password: Generated key from Brevo</p>
+                  <p style="margin-top:.6rem;color:var(--green)">✅ Free: 300 emails/day, 9,000/month</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Confirmation Template -->
+        <div class="tab-panel" id="es-order-confirm">
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">✅ Order Confirmation Email Template</div>
+              <div class="info-box">This email is sent automatically when a customer places an order.</div>
+              <div class="f-group"><label class="f-label">Subject Line</label><input class="f-input" id="tpl-oc-subject" value="✅ Your Pure Home Store Order is Confirmed! (#[ORDER_ID])"></div>
+              <div class="f-group"><label class="f-label">Email Body</label><textarea class="f-textarea" id="tpl-oc-body" rows="12">Hi [CUSTOMER_NAME],
+
+Thank you for your order! We're thrilled to have you as a customer. 🎉
+
+📦 ORDER DETAILS
+Order Number: #[ORDER_ID]
+Order Date: [ORDER_DATE]
+Total Amount: $[ORDER_TOTAL] AUD
+
+🛍️ ITEMS ORDERED
+[ORDER_ITEMS]
+
+🚚 DELIVERY ADDRESS
+[DELIVERY_ADDRESS]
+
+⏱️ ESTIMATED DELIVERY
+Your order will be delivered in [DELIVERY_DAYS] business days.
+
+📧 WHAT HAPPENS NEXT?
+1. We're preparing your order now
+2. You'll receive a shipping confirmation with tracking number
+3. Your order will arrive at your door
+
+If you have any questions, reply to this email or contact us at support@purehomestore.com.au
+
+Thank you again for shopping with Pure Home Store! 🌿
+
+Warm regards,
+The Pure Home Store Team</textarea></div>
+              <button class="btn btn-primary" onclick="saveEmailTemplate('order-confirm')">💾 Save Template</button>
+            </div>
+            <div>
+              <div class="card">
+                <div class="card-title">👁️ Preview</div>
+                <div class="email-tpl">
+                  <div class="email-tpl-header">Pure Home Store &lt;orders@purehomestore.com.au&gt;</div>
+                  <div class="email-tpl-body" style="font-size:.8rem">
+                    <div style="text-align:center;background:#059669;color:#fff;padding:.8rem;border-radius:6px;margin-bottom:1rem"><strong>✅ Order Confirmed!</strong></div>
+                    <p>Hi <strong>Sarah</strong>,</p>
+                    <p style="margin:.5rem 0">Thank you for your order! We're excited to get this to you. 🎉</p>
+                    <div style="background:#F9FAFB;border-radius:8px;padding:.8rem;margin:.7rem 0;font-size:.75rem">
+                      <p><strong>Order #ORD12345</strong> · 15 Jan 2025</p>
+                      <p style="margin-top:.3rem">HOMASA Neck Shoulder Massager × 1 · <strong>$158.74</strong></p>
+                    </div>
+                    <p style="font-size:.75rem;color:#888">Estimated delivery: 3–10 business days</p>
+                  </div>
+                  <div class="email-tpl-footer">Pure Home Store · support@purehomestore.com.au · <a style="color:#888">Unsubscribe</a></div>
+                </div>
+                <div class="card-title" style="margin-top:1rem">🔧 Available Variables</div>
+                <div style="font-size:.75rem;line-height:1.9;color:var(--text2)">
+                  <code>[CUSTOMER_NAME]</code> — Customer's name<br>
+                  <code>[ORDER_ID]</code> — Order number<br>
+                  <code>[ORDER_DATE]</code> — Date of order<br>
+                  <code>[ORDER_TOTAL]</code> — Total amount<br>
+                  <code>[ORDER_ITEMS]</code> — List of items<br>
+                  <code>[DELIVERY_ADDRESS]</code> — Customer address<br>
+                  <code>[DELIVERY_DAYS]</code> — Estimated delivery
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shipped Email -->
+        <div class="tab-panel" id="es-order-shipped">
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">🚚 Order Shipped Email Template</div>
+              <div class="info-box">Sent when you mark an order as "Shipped" in Order Management.</div>
+              <div class="f-group"><label class="f-label">Subject Line</label><input class="f-input" id="tpl-ship-subject" value="🚚 Your Pure Home Store Order is On Its Way! (#[ORDER_ID])"></div>
+              <div class="f-group"><label class="f-label">Email Body</label><textarea class="f-textarea" id="tpl-ship-body" rows="10">Hi [CUSTOMER_NAME],
+
+Great news — your order is on its way! 📦
+
+🚚 TRACKING INFORMATION
+Tracking Number: [TRACKING_NUMBER]
+Carrier: [CARRIER_NAME]
+Track your order: [TRACKING_LINK]
+
+📍 ESTIMATED DELIVERY
+[ESTIMATED_DELIVERY_DATE]
+
+📦 YOUR ORDER
+[ORDER_ITEMS]
+
+If you have any questions about your delivery, please contact us at support@purehomestore.com.au
+
+We hope you love your new products!
+
+Warm regards,
+The Pure Home Store Team 🌿</textarea></div>
+              <button class="btn btn-primary" onclick="saveEmailTemplate('shipped')">💾 Save Template</button>
+            </div>
+            <div class="card">
+              <div class="card-title">👁️ Preview</div>
+              <div class="email-tpl">
+                <div class="email-tpl-header">Pure Home Store &lt;orders@purehomestore.com.au&gt;</div>
+                <div class="email-tpl-body" style="font-size:.8rem">
+                  <div style="text-align:center;background:#2563EB;color:#fff;padding:.8rem;border-radius:6px;margin-bottom:1rem"><strong>🚚 Your Order is Shipped!</strong></div>
+                  <p>Hi <strong>Sarah</strong>,</p>
+                  <p style="margin:.5rem 0">Your order is on its way! 🎉</p>
+                  <div style="background:#EFF6FF;border-radius:8px;padding:.8rem;margin:.7rem 0;font-size:.75rem">
+                    <p><strong>Tracking: AP1234567890AU</strong></p>
+                    <p style="margin-top:.2rem">Carrier: Australia Post</p>
+                    <p style="margin-top:.2rem;color:#2563EB">Track → auspost.com.au/mypost</p>
+                  </div>
+                </div>
+                <div class="email-tpl-footer">Pure Home Store · support@purehomestore.com.au</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Welcome Email -->
+        <div class="tab-panel" id="es-welcome">
+          <div class="card">
+            <div class="card-title">👋 Welcome Email (First Purchase)</div>
+            <div class="f-group"><label class="f-label">Subject</label><input class="f-input" id="tpl-welcome-subject" value="Welcome to Pure Home Store! Here's a special gift for you 🎁"></div>
+            <div class="f-group"><label class="f-label">Email Body</label><textarea class="f-textarea" id="tpl-welcome-body" rows="8">Hi [CUSTOMER_NAME],
+
+Welcome to the Pure Home Store family! 🌿
+
+We're so excited to have you with us. Your order is our first chance to show you why thousands of Australians trust us for their wellness needs.
+
+🎁 AS A WELCOME GIFT — Use code WELCOME10 for 10% off your next order!
+
+📱 FOLLOW US
+Stay updated with new products and wellness tips.
+
+Thank you for choosing Pure Home Store!
+
+The Pure Home Store Team</textarea></div>
+            <button class="btn btn-primary" onclick="saveEmailTemplate('welcome')">💾 Save Template</button>
+          </div>
+        </div>
+
+        <!-- Abandoned Cart -->
+        <div class="tab-panel" id="es-abandoned">
+          <div class="card">
+            <div class="card-title">🛒 Abandoned Cart Recovery Email</div>
+            <div class="f-group"><label class="f-label">Subject</label><input class="f-input" id="tpl-abandon-subject" value="Hey [CUSTOMER_NAME] — you left something behind! 🛒"></div>
+            <div class="f-group"><label class="f-label">Email Body</label><textarea class="f-textarea" id="tpl-abandon-body" rows="8">Hi [CUSTOMER_NAME],
+
+We noticed you left some items in your cart at Pure Home Store!
+
+🛒 YOUR CART
+[CART_ITEMS]
+
+Don't miss out — these items are going fast! ⚡
+
+👉 Complete your purchase: [STORE_LINK]
+
+As a reminder, we offer:
+✅ Free shipping on orders over $50
+✅ 30-day hassle-free returns
+✅ Fast 3-20 day Australian delivery
+
+If you have any questions, reply to this email!
+
+Pure Home Store Team 🌿</textarea></div>
+            <button class="btn btn-primary" onclick="saveEmailTemplate('abandoned')">💾 Save Template</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PAYMENT GATEWAYS ═══ -->
+      <div class="panel" id="panel-payments">
+        <div class="grid-2">
+          <div>
+            <div class="card gap">
+              <div class="card-title">💳 Payment Methods</div>
+              <div class="info-box">Connect payment gateways so customers can pay on your store. Enabled gateways will appear at checkout.</div>
+
+              <!-- PayPal -->
+              <div class="payment-provider" id="pp-paypal">
+                <div class="payment-provider-header">
+                  <div class="payment-provider-title">🅿️ PayPal <span class="badge badge-green" style="display:none" id="pp-paypal-badge">Connected</span></div>
+                  <label class="toggle"><input type="checkbox" id="pp-paypal-on" onchange="toggleProvider('paypal')"><span class="toggle-slider"></span></label>
+                </div>
+                <p class="text-sm">Most popular in Australia. Customers can pay with PayPal balance or any credit/debit card. No monthly fees — only 2.9% + 30¢ per transaction.</p>
+                <div class="payment-provider-fields" id="pp-paypal-fields">
+                  <div class="f-group"><label class="f-label">PayPal Business Email</label><input class="f-input" id="pp-paypal-email" placeholder="business@youremail.com"></div>
+                  <div class="f-group"><label class="f-label">PayPal Client ID (from developer.paypal.com)</label><input class="f-input" id="pp-paypal-client" placeholder="AXxxxxxxxxxxxxxxxxxxxxxx"></div>
+                  <div class="f-group"><label class="f-label">Mode</label><select class="f-select" id="pp-paypal-mode"><option value="sandbox">🧪 Sandbox (Testing)</option><option value="live">🔴 Live (Real Payments)</option></select></div>
+                  <button class="btn btn-primary btn-sm" onclick="saveProvider('paypal')">💾 Save PayPal</button>
+                </div>
+              </div>
+
+              <!-- Stripe -->
+              <div class="payment-provider" id="pp-stripe">
+                <div class="payment-provider-header">
+                  <div class="payment-provider-title">💳 Stripe <span class="badge badge-green" style="display:none" id="pp-stripe-badge">Connected</span></div>
+                  <label class="toggle"><input type="checkbox" id="pp-stripe-on" onchange="toggleProvider('stripe')"><span class="toggle-slider"></span></label>
+                </div>
+                <p class="text-sm">Accept Visa, Mastercard, Amex directly. 1.75% + 30¢ per transaction in Australia. Best for credit card payments.</p>
+                <div class="payment-provider-fields" id="pp-stripe-fields">
+                  <div class="f-group"><label class="f-label">Stripe Publishable Key</label><input class="f-input" id="pp-stripe-pub" placeholder="pk_live_xxxxxxxxxxxxxxxxxxxxxxxxxx"></div>
+                  <div class="f-group"><label class="f-label">Stripe Secret Key</label><input class="f-input" id="pp-stripe-sec" placeholder="sk_live_xxxxxxxxxxxxxxxxxxxxxxxxxx" type="password"></div>
+                  <div class="f-group"><label class="f-label">Webhook Secret</label><input class="f-input" id="pp-stripe-wh" placeholder="whsec_xxxxxxxxxx"></div>
+                  <button class="btn btn-primary btn-sm" onclick="saveProvider('stripe')">💾 Save Stripe</button>
+                </div>
+              </div>
+
+              <!-- AfterPay -->
+              <div class="payment-provider" id="pp-afterpay">
+                <div class="payment-provider-header">
+                  <div class="payment-provider-title">🟢 Afterpay <span class="badge badge-green" style="display:none" id="pp-afterpay-badge">Connected</span></div>
+                  <label class="toggle"><input type="checkbox" id="pp-afterpay-on" onchange="toggleProvider('afterpay')"><span class="toggle-slider"></span></label>
+                </div>
+                <p class="text-sm">Buy now, pay later. Very popular in Australia — increases conversion by up to 20%. Customers pay in 4 instalments, you get paid upfront.</p>
+                <div class="payment-provider-fields" id="pp-afterpay-fields">
+                  <div class="f-group"><label class="f-label">Afterpay Merchant ID</label><input class="f-input" id="pp-afterpay-id" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"></div>
+                  <div class="f-group"><label class="f-label">Afterpay Secret Key</label><input class="f-input" id="pp-afterpay-sec" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" type="password"></div>
+                  <button class="btn btn-primary btn-sm" onclick="saveProvider('afterpay')">💾 Save Afterpay</button>
+                </div>
+              </div>
+
+              <!-- Bank Transfer -->
+              <div class="payment-provider" id="pp-bank">
+                <div class="payment-provider-header">
+                  <div class="payment-provider-title">🏦 Bank Transfer <span class="badge badge-green" style="display:none" id="pp-bank-badge">Connected</span></div>
+                  <label class="toggle"><input type="checkbox" id="pp-bank-on" onchange="toggleProvider('bank')"><span class="toggle-slider"></span></label>
+                </div>
+                <p class="text-sm">Manual bank transfer. Customer gets your BSB/account details and transfers. No transaction fees but manual order confirmation needed.</p>
+                <div class="payment-provider-fields" id="pp-bank-fields">
+                  <div class="f-group"><label class="f-label">Bank Name</label><input class="f-input" id="pp-bank-name" placeholder="Commonwealth Bank of Australia"></div>
+                  <div class="f-group"><label class="f-label">Account Name</label><input class="f-input" id="pp-bank-acc-name" placeholder="Pure Home Store Pty Ltd"></div>
+                  <div class="grid-2">
+                    <div class="f-group"><label class="f-label">BSB</label><input class="f-input" id="pp-bank-bsb" placeholder="062-000"></div>
+                    <div class="f-group"><label class="f-label">Account Number</label><input class="f-input" id="pp-bank-acc" placeholder="12345678"></div>
+                  </div>
+                  <button class="btn btn-primary btn-sm" onclick="saveProvider('bank')">💾 Save Bank Details</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="card gap">
+              <div class="card-title">📊 Transaction Fees Comparison</div>
+              <table>
+                <thead><tr><th>Gateway</th><th>AU Fee</th><th>Best For</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>PayPal</strong></td><td>2.9% + $0.30</td><td>Most customers</td></tr>
+                  <tr><td><strong>Stripe</strong></td><td>1.75% + $0.30</td><td>Credit cards</td></tr>
+                  <tr><td><strong>Afterpay</strong></td><td>4% + $0.30</td><td>BNPL buyers</td></tr>
+                  <tr><td><strong>Bank Transfer</strong></td><td>$0</td><td>High value orders</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card gap">
+              <div class="card-title">🔗 Setup Links</div>
+              <div style="font-size:.82rem;line-height:2">
+                <p>💳 <strong>PayPal Business:</strong> <a href="https://www.paypal.com/au/business" target="_blank" style="color:var(--blue)">paypal.com/au/business</a></p>
+                <p>🔵 <strong>Stripe AU:</strong> <a href="https://stripe.com/au" target="_blank" style="color:var(--blue)">stripe.com/au</a></p>
+                <p>🟢 <strong>Afterpay:</strong> <a href="https://www.afterpay.com/en-AU/business" target="_blank" style="color:var(--blue)">afterpay.com/business</a></p>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">💡 Payment Recommendation for Australia</div>
+              <div style="font-size:.82rem;line-height:1.8;color:var(--text2)">
+                <p><strong style="color:var(--text)">Enable all 3 for maximum conversions:</strong></p>
+                <p>1. ✅ <strong>PayPal</strong> — familiar and trusted by all Australians</p>
+                <p>2. ✅ <strong>Stripe</strong> — for direct card payments</p>
+                <p>3. ✅ <strong>Afterpay</strong> — increases average order value by 40%</p>
+                <p style="margin-top:.6rem;font-size:.75rem;background:var(--green-lt);padding:.6rem;border-radius:6px;color:#065F46">💡 Stores that offer Afterpay in Australia see up to 20% higher conversion rates</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ STORE SETTINGS ═══ -->
+      <div class="panel" id="panel-store-settings">
+        <div class="grid-2">
+          <div>
+            <div class="card gap">
+              <div class="card-title">🏪 Store Information</div>
+              <div class="f-group"><label class="f-label">Store Name</label><input class="f-input" id="ss-name" value="Pure Home Store"></div>
+              <div class="f-group"><label class="f-label">Tagline</label><input class="f-input" id="ss-tagline" value="Wellness Delivered Across Australia"></div>
+              <div class="f-group"><label class="f-label">Store Domain</label><input class="f-input" id="ss-domain" placeholder="purehomestore.com.au"></div>
+              <div class="f-group"><label class="f-label">Support Email</label><input class="f-input" id="ss-email" placeholder="support@purehomestore.com.au"></div>
+              <div class="f-group"><label class="f-label">Support Phone (optional)</label><input class="f-input" id="ss-phone" placeholder="+61 2 XXXX XXXX"></div>
+              <div class="f-group"><label class="f-label">ABN Number</label><input class="f-input" id="ss-abn" placeholder="XX XXX XXX XXX"></div>
+              <div class="f-group"><label class="f-label">Business Address</label><textarea class="f-textarea" id="ss-address" rows="2" placeholder="Suite X, 123 Main Street, Sydney NSW 2000"></textarea></div>
+              <button class="btn btn-primary" onclick="saveStoreSettings()">💾 Save Store Info</button>
+            </div>
+            <div class="card gap">
+              <div class="card-title">🚚 Shipping Settings</div>
+              <div class="toggle-wrap"><div class="toggle-info"><h4>Free Shipping</h4><p>Enable free shipping above minimum order</p></div><label class="toggle"><input type="checkbox" id="ss-free-ship" checked><span class="toggle-slider"></span></label></div>
+              <div class="f-group" style="margin-top:.8rem"><label class="f-label">Free Shipping Minimum (AUD)</label><input class="f-input" id="ss-free-min" value="50" type="number"></div>
+              <div class="f-group"><label class="f-label">Flat Rate Shipping (AUD)</label><input class="f-input" id="ss-flat" value="6.95" type="number" step="0.01"></div>
+              <div class="f-group"><label class="f-label">Express Shipping (AUD)</label><input class="f-input" id="ss-express" value="14.95" type="number" step="0.01"></div>
+              <button class="btn btn-primary" onclick="showToast('✅ Shipping settings saved!','success')">💾 Save Shipping</button>
+            </div>
+          </div>
+          <div>
+            <div class="card gap">
+              <div class="card-title">🔐 Admin Access</div>
+              <div class="f-group"><label class="f-label">Admin Username</label><input class="f-input" id="ss-admin-user" placeholder="admin"></div>
+              <div class="f-group"><label class="f-label">Current Password</label><input class="f-input" type="password" id="ss-curr-pass" placeholder="Current password"></div>
+              <div class="f-group"><label class="f-label">New Password</label><input class="f-input" type="password" id="ss-new-pass" placeholder="New password (min 6 chars)"></div>
+              <div class="f-group"><label class="f-label">Confirm New Password</label><input class="f-input" type="password" id="ss-conf-pass" placeholder="Confirm new password"></div>
+              <button class="btn btn-primary" onclick="changeAdminPass()">🔐 Update Password</button>
+            </div>
+            <div class="card gap">
+              <div class="card-title">🔔 Notification Settings</div>
+              <div class="toggle-wrap"><div class="toggle-info"><h4>New Order Notification</h4><p>Email when new order placed</p></div><label class="toggle"><input type="checkbox" id="ss-notif-order" checked><span class="toggle-slider"></span></label></div>
+              <div class="toggle-wrap"><div class="toggle-info"><h4>Low Stock Alert</h4><p>Alert when product stock is low</p></div><label class="toggle"><input type="checkbox" id="ss-notif-stock"><span class="toggle-slider"></span></label></div>
+              <div class="f-group" style="margin-top:.8rem"><label class="f-label">Notification Email</label><input class="f-input" id="ss-notif-email" placeholder="your@email.com"></div>
+              <button class="btn btn-primary" onclick="showToast('✅ Notification settings saved!','success')">💾 Save Notifications</button>
+            </div>
+            <div class="card">
+              <div class="card-title">💾 Data Management</div>
+              <div class="btn-row">
+                <button class="btn btn-sm" onclick="exportAllData()">📥 Export All Data</button>
+                <button class="btn btn-danger btn-sm" onclick="if(confirm('Reset ALL data? This cannot be undone!'))resetAllData()">🗑️ Reset All Data</button>
+              </div>
+              <p class="text-sm" style="margin-top:.6rem">All data stored locally in your browser. Export regularly to backup.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- content -->
+  </div><!-- main -->
+</div><!-- app -->
+
+<!-- Order Detail Modal -->
+<div class="modal-overlay" id="order-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2>📦 Order Details</h2>
+    <div id="order-modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════
+const DB = {
+  get(k,def=null){ try{const v=localStorage.getItem('phs2_'+k);return v?JSON.parse(v):def}catch(e){return def} },
+  set(k,v){ localStorage.setItem('phs2_'+k,JSON.stringify(v)); return v }
+};
+
+// ═══════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════
+let ADMIN_USER = DB.get('admin_user','admin');
+let ADMIN_PASS = DB.get('admin_pass','purehome123');
+
+function doLogin(){
+  const u=document.getElementById('l-user').value.trim();
+  const p=document.getElementById('l-pass').value.trim();
+  if(u===ADMIN_USER && p===ADMIN_PASS){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').classList.add('active');
+    document.getElementById('s-username').textContent=u;
+    loadAllData();
+    renderDashboard();
+  } else {
+    document.getElementById('l-err').style.display='block';
+  }
+}
+document.getElementById('l-pass').addEventListener('keydown',e=>e.key==='Enter'&&doLogin());
+
+function doLogout(){
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('l-pass').value='';
+  document.getElementById('l-err').style.display='none';
+}
+
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+let products=[], orders=[], blogs=[], emailCampaigns=[], storeSettings={}, seoData={}, paymentData={}, smtpData={}, emailTemplates={};
+
+const DEFAULT_PRODUCTS = [
+  {id:'p1',cat:'massage',badge:'⭐ Best Seller',name:'HOMASA Neck Shoulder Massager Portable',shortDesc:'Heated neck & shoulder massager, adjustable vibration. 2–10 day AU delivery.',desc:'Professional portable neck & shoulder massager with adjustable heat and multiple vibration modes. Perfect for desk workers and athletes.',feats:['Adjustable heat settings','Multiple vibration modes','Ergonomic wrap-around design','Battery powered','2–10 day AU delivery','30-day money back'],price:158.74,oldPrice:220,cost:79.37,shipCost:0,link:'https://www.aliexpress.com/item/1005011933871631.html',ship:'2–10 business days',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/S9b47a0f963234c8f9bdddd532ea34ddf6.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S922bc9c2d3394616853c26e4bf8c28b1O.jpg_640x640q75.jpg_.avif'],status:'active',reviews:[{name:'Sarah M.',loc:'Sydney, NSW',stars:5,text:'Arrived fast and the heat function is incredible!'},{name:'James K.',loc:'Melbourne, VIC',stars:5,text:'Bought for my wife. She loves it!'}]},
+  {id:'p2',cat:'massage',badge:'🔥 Trending',name:'Shiatsu Full Body Massage Mat with Heat',shortDesc:'Full body shiatsu mat, 10 nodes, heat therapy. 3–10 day AU delivery.',desc:'Full-body massage mat with 10 shiatsu nodes covering back, waist, thighs, and calves.',feats:['10 shiatsu massage nodes','Built-in heat therapy','3–10 day AU delivery'],price:172.14,oldPrice:240,cost:86.07,shipCost:0,link:'https://www.aliexpress.com/item/1005011894660050.html',ship:'3–10 business days',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/Se3e2d3bd0ee24239a603bf274d64a522E.jpg_640x640q75.jpg_.avif'],status:'active',reviews:[{name:'Michelle T.',loc:'Brisbane, QLD',stars:5,text:'Back pain significantly reduced after one week.'}]},
+  {id:'p3',cat:'massage',badge:'💆 Pain Relief',name:'Period Care Heating Belly Belt Massager',shortDesc:'Fast-heating wearable belt, 3 temps, 4 vibration modes. 8–15 days.',desc:'Wearable heating belt for menstrual cramp relief.',feats:['3-second rapid heating','USB rechargeable','8–15 day AU delivery'],price:17.83,oldPrice:29,cost:7.13,shipCost:0,link:'https://www.aliexpress.com/item/1005005140277683.html',ship:'8–15 business days',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/Sa155fd87faf34a098e6b38677e1d719as.jpg_640x640q75.jpg_.avif'],status:'active',reviews:[]},
+  {id:'p4',cat:'massage',badge:'⭐ Best Value',name:'SucceBuy Mini Massage Gun Deep Tissue',shortDesc:'4 speeds, 40W, 2500mAh, CE certified. 3–10 days.',desc:'Professional mini massage gun, 4 speed levels, 40W motor, CE certified.',feats:['4 adjustable speed levels','40W motor','CE certified','3–10 day AU delivery'],price:71.18,oldPrice:100,cost:35.59,shipCost:0,link:'https://www.aliexpress.com/item/1005010102791581.html',ship:'3–10 business days',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/Sba6583034cd04427be893852827bf1afY.jpg_640x640q75.jpg_.avif'],status:'active',reviews:[{name:'Chris A.',loc:'Melbourne, VIC',stars:5,text:'Compact but powerful! Arrived in 7 days.'}]},
+  {id:'p5',cat:'massage',badge:'🔥 Pro Grade',name:'30 Level Fascia Massage Gun',shortDesc:'30 speed levels, deep tissue. 3–10 days.',desc:'Professional fascia gun with 30 adjustable levels.',feats:['30 speed levels','Electric powered','3–10 day AU delivery'],price:73.96,oldPrice:110,cost:36.98,shipCost:0,link:'https://www.aliexpress.com/item/1005010718145781.html',ship:'3–10 business days',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/S9b47a0f963234c8f9bdddd532ea34ddf6.jpg_640x640q75.jpg_.avif'],status:'active',reviews:[]},
+  {id:'p6',cat:'massage',badge:'💆 Deep Recovery',name:'Fascia Gun Deep Tissue 6 Speed',shortDesc:'3200 RPM, <44dB quiet, Type-C charging. 7–15 days.',desc:'Smart percussion gun, 3200 RPM, quiet operation.',feats:['3200 RPM','<44dB quiet','Type-C charging','7–15 day AU delivery'],price:33.57,oldPrice:55,cost:11.19,shipCost:0,link:'https://www.aliexpress.com/item/1005010806507345.html',ship:'7–15 business days',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/S8c30c9577661428aa039439d85ee92827.jpg_640x640q75.jpg_.avif'],status:'active',reviews:[]},
+  {id:'p7',cat:'air',badge:'🏠 H13 HEPA',name:'Chuboor Air Purifier H13 HEPA Filter',shortDesc:'True H13 HEPA, 185m³/h CADR, 23dB sleep mode. 3–10 days.',desc:'H13 True HEPA removes 99.97% of particles.',feats:['True H13 HEPA','185 m³/h CADR','23dB sleep mode','3–10 day AU delivery'],price:128.82,oldPrice:190,cost:64.41,shipCost:0,link:'https://www.aliexpress.com/item/1005011865858355.html',ship:'3–10 business days',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/S67988aa19cfc4de6bd6a12ec83c9b03aL.jpg_640x640q75.jpg_.avif'],status:'active',reviews:[{name:'Fiona K.',loc:'Adelaide, SA',stars:5,text:'Made a huge difference for my asthma.'}]},
+  {id:'p8',cat:'air',badge:'🌟 2-in-1',name:'2-in-1 Air Purifier & Humidifier H13 HEPA',shortDesc:'H13 HEPA + humidifier, 35–60m² coverage. 7–15 days.',desc:'Advanced 2-in-1 purifier and humidifier covering 35–60m².',feats:['2-in-1 purify + humidify','H13 HEPA','Covers 35–60m²','7–15 day AU delivery'],price:155.98,oldPrice:230,cost:77.99,shipCost:0,link:'https://www.aliexpress.com/item/1005007552718905.html',ship:'7–15 business days',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/Sab89bc1601064529a2e7d5e47c7db0d5I.jpg_640x640q75.jpg_.avif'],status:'active',reviews:[]},
+  {id:'p9',cat:'water',badge:'⚡ High Flow',name:'SucceBuy Spin Down Filter 40 Micron',shortDesc:'40μm, 4T/H high flow, CB certified. 3–10 days.',desc:'High-performance spin-down filter with 4T/H flow rate.',feats:['40μm filtration','4T/H high flow','CB certified','3–10 day AU delivery'],price:207.38,oldPrice:300,cost:103.69,shipCost:0,link:'https://www.aliexpress.com/item/1005010149620008.html',ship:'3–10 business days',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/S858405d5a19047c28e26693663cd2ec3v.jpg_640x640q75.jpg_.avif'],status:'active',reviews:[]},
+  {id:'p10',cat:'water',badge:'🌊 Alkaline',name:'Alkaline Water Ionizer Machine 5-Plate',shortDesc:'5 platinum-plate ionizer, pH 5–9.5. 10–20 days.',desc:'Premium alkaline water ionizer, Japanese technology.',feats:['5 platinum electrodes','pH 5–9.5','Japanese technology','10–20 day AU delivery'],price:707.84,oldPrice:999,cost:353.92,shipCost:0,link:'https://www.aliexpress.com/item/1005007377999164.html',ship:'10–20 business days',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/Sf9ab5c619da54f2a9bd19a0a4302cbc9z.jpg_640x640q75.jpg_.avif'],status:'active',reviews:[{name:'Angela K.',loc:'Sydney, NSW',stars:5,text:'Worth every cent. Water quality noticeably better.'}]}
+];
+
+const DEFAULT_BLOGS = [
+  {id:'b1',title:'5 Benefits of Using a Massage Gun Daily',cat:'Health & Wellness',author:'Pure Home Team',excerpt:'Discover how a daily massage gun routine can transform your recovery.',content:`Using a massage gun daily can have tremendous benefits for your body. Here are the top 5 reasons why thousands of Australians are adding this to their daily routine.\n\n1. FASTER MUSCLE RECOVERY\nA massage gun speeds up recovery by increasing blood flow and helping flush out lactic acid.\n\n2. REDUCES STRESS AND TENSION\nJust 10 minutes before bed can significantly lower stress levels.\n\n3. IMPROVES FLEXIBILITY\nRegular massage breaks up fascia that restricts movement.\n\n4. RELIEVES CHRONIC PAIN\nTargets specific trigger points that traditional stretching can't reach.\n\n5. BETTER SLEEP QUALITY\nThe relaxation effect leads to deeper, more restful sleep.`,img:'https://ae-pic-a1.aliexpress-media.com/kf/Sba6583034cd04427be893852827bf1afY.jpg_640x640q75.jpg_.avif',date:'15 Jan 2025',readTime:'5 min read',seoTitle:'Benefits of Massage Gun | Pure Home Store Australia',seoDesc:'Discover the top 5 benefits of using a massage gun daily for Australian athletes and desk workers.',keyword:'massage gun australia',status:'published'},
+  {id:'b2',title:'Why Every Australian Home Needs an Air Purifier',cat:'Home & Living',author:'Pure Home Team',excerpt:'Indoor air can be 5x more polluted than outdoor air. Here\'s why an air purifier is essential.',content:`Did you know that indoor air can be up to 5 times more polluted than outdoor air?\n\nWHAT'S IN YOUR INDOOR AIR?\nDust mites, pet dander, mould spores, pollen, cooking fumes, and VOCs accumulate indoors.\n\nHOW AIR PURIFIERS HELP\nA quality H13 HEPA air purifier removes 99.97% of particles as small as 0.3 microns.\n\nAUSTRALIAN SPECIFIC CONCERNS\nBushfire smoke season, high pollen counts in spring, and coastal humidity make Australian homes particularly prone to air quality issues.`,img:'https://ae-pic-a1.aliexpress-media.com/kf/S67988aa19cfc4de6bd6a12ec83c9b03aL.jpg_640x640q75.jpg_.avif',date:'20 Jan 2025',readTime:'4 min read',seoTitle:'Air Purifier Australia | Do You Need One? | Pure Home Store',seoDesc:'Learn why Australian homes need air purifiers and which H13 HEPA purifier is best for your family.',keyword:'air purifier australia',status:'published'}
+];
+
+function loadAllData(){
+  products = DB.get('products', DEFAULT_PRODUCTS);
+  orders = DB.get('orders', []);
+  blogs = DB.get('blogs', DEFAULT_BLOGS);
+  emailCampaigns = DB.get('campaigns', []);
+  storeSettings = DB.get('store', {storeName:'Pure Home Store',email:'support@purehomestore.com.au',domain:'purehomestore.com.au',freeShipMin:50,flatRate:6.95,express:14.95});
+  seoData = DB.get('seo', {siteTitle:'Pure Home Store — Premium Wellness Products Australia',siteDesc:'Buy premium massage guns, air purifiers and water filters in Australia.',keywords:'massage gun australia, air purifier australia, water filter australia'});
+  paymentData = DB.get('payments', {});
+  smtpData = DB.get('smtp', {});
+  emailTemplates = DB.get('email-tpls', {});
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+const META = {
+  'dashboard':{title:'Dashboard',sub:'Overview of your store performance',btn:'+ Add Product',btnFn:"go('add-product')"},
+  'orders':{title:'Order Management',sub:'View and manage customer orders',btn:'📥 Export CSV',btnFn:'exportOrdersCSV()'},
+  'products':{title:'Products',sub:'Manage your product catalog',btn:'+ Add Product',btnFn:"go('add-product')"},
+  'add-product':{title:'Add / Edit Product',sub:'Create or update a product listing',btn:'View All Products',btnFn:"go('products')"},
+  'blog':{title:'Blog Posts',sub:'Manage blog content and articles',btn:'+ New Post',btnFn:"go('add-blog')"},
+  'add-blog':{title:'New Blog Post',sub:'Write and publish a blog article',btn:'View All Posts',btnFn:"go('blog')"},
+  'email-marketing':{title:'Email Marketing',sub:'Build campaigns for your 5,000 leads',btn:'+ New Campaign',btnFn:"switchTab('em','builder')"},
+  'seo':{title:'SEO Settings',sub:'Optimize your store for Google Australia',btn:'💾 Save All SEO',btnFn:'saveSEO()'},
+  'email-settings':{title:'Email & Templates',sub:'SMTP setup and automated email templates',btn:'Send Test Email',btnFn:"showToast('💡 Connect SMTP first, then test from your email platform','info')"},
+  'payments':{title:'Payment Gateways',sub:'Connect payment providers for checkout',btn:'View Docs',btnFn:"window.open('https://stripe.com/au','_blank')"},
+  'store-settings':{title:'Store Settings',sub:'Configure general store preferences',btn:'💾 Save All',btnFn:'saveStoreSettings()'}
+};
+
+function go(panel){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.s-item').forEach(i=>i.classList.remove('active'));
+  const el=document.getElementById('panel-'+panel);
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.s-item').forEach(i=>{ if(i.getAttribute('onclick')?.includes(`'${panel}'`)) i.classList.add('active'); });
+  const m=META[panel]||{title:panel,sub:'',btn:'Save',btnFn:''};
+  document.getElementById('page-title').textContent=m.title;
+  document.getElementById('page-sub').textContent=m.sub;
+  const btn=document.getElementById('top-action-btn');
+  btn.textContent=m.btn; btn.onclick=new Function(m.btnFn);
+  // Panel-specific renders
+  if(panel==='dashboard') renderDashboard();
+  if(panel==='orders') renderOrdersTable();
+  if(panel==='products') renderProductsTable();
+  if(panel==='blog') renderBlogTable();
+  if(panel==='add-product') resetProdForm();
+  if(panel==='add-blog') resetBlogForm();
+  if(panel==='email-marketing') renderEmailMarketing();
+  if(panel==='seo') loadSeoForm();
+  if(panel==='email-settings') loadEmailSettings();
+  if(panel==='payments') loadPayments();
+  if(panel==='store-settings') loadStoreSettings();
+}
+
+function switchTab(group, tab){
+  const panels=document.querySelectorAll(`[id^="${group}-"]`);
+  const tabs=document.querySelectorAll('.tabs .tab');
+  // Hide all tab panels in this group
+  panels.forEach(p=>{if(p.classList.contains('tab-panel'))p.classList.remove('active')});
+  const target=document.getElementById(`${group}-${tab}`);
+  if(target) target.classList.add('active');
+  // Update tab active state
+  tabs.forEach((t,i)=>{
+    const fn=t.getAttribute('onclick')||'';
+    t.classList.toggle('active', fn.includes(`'${tab}'`));
+  });
+}
+
+// ═══════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════
+function renderDashboard(){
+  const active=products.filter(p=>p.status==='active');
+  const totalRev=orders.reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+  const pending=orders.filter(o=>o.status==='pending').length;
+  document.getElementById('d-rev').textContent='$'+totalRev.toFixed(0);
+  document.getElementById('d-orders').textContent=orders.length;
+  document.getElementById('d-prods').textContent=active.length;
+  document.getElementById('d-rev-chg').textContent=totalRev>0?`↑ ${orders.length} orders total`:'Start marketing to earn!';
+  document.getElementById('d-rev-chg').className='stat-chg '+(totalRev>0?'chg-up':'chg-neutral');
+  document.getElementById('d-pending-count').textContent=pending+' pending';
+  const badge=document.getElementById('orders-badge');
+  badge.style.display=pending>0?'inline':'none'; badge.textContent=pending;
+  // Recent orders
+  const tbody=document.getElementById('d-orders-tbody');
+  tbody.innerHTML=orders.length===0
+    ?'<tr><td colspan="4"><div class="empty-state"><div class="empty-icon">📭</div><p>No orders yet. Start marketing to your 5,000 leads!</p></div></td></tr>'
+    :orders.slice(-8).reverse().map(o=>`<tr><td><strong>#${o.id}</strong></td><td>${o.customer}</td><td><strong>$${o.total}</strong></td><td><span class="badge badge-${statusColor(o.status)}">${o.status}</span></td></tr>`).join('');
+  // Setup checklist
+  const checks=[
+    {ok:products.length>0,text:'Products added to store',action:"go('add-product')"},
+    {ok:!!paymentData.paypal?.enabled||!!paymentData.stripe?.enabled,text:'Payment gateway connected',action:"go('payments')"},
+    {ok:!!smtpData.host||!!smtpData.platform,text:'Email/SMTP configured',action:"go('email-settings')"},
+    {ok:!!seoData.siteTitle,text:'SEO settings configured',action:"go('seo')"},
+    {ok:blogs.length>0,text:'First blog post published',action:"go('add-blog')"},
+    {ok:emailCampaigns.length>0,text:'First email campaign created',action:"go('email-marketing')"},
+    {ok:!!storeSettings.domain,text:'Custom domain configured',action:"go('store-settings')"},
+  ];
+  document.getElementById('setup-checklist').innerHTML=checks.map(c=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem">
+        <span>${c.ok?'✅':'⬜'}</span>
+        <span style="color:${c.ok?'var(--text)':'var(--text2)'}">${c.text}</span>
+      </div>
+      ${c.ok?'':`<button class="btn btn-sm" onclick="${c.action}" style="font-size:.68rem;padding:.25rem .6rem">Fix →</button>`}
+    </div>`).join('');
+}
+
+function statusColor(s){ return {delivered:'green',shipped:'blue',processing:'yellow',pending:'red',cancelled:'red'}[s]||'yellow'; }
+
+// ═══════════════════════════════════════════
+// ORDERS
+// ═══════════════════════════════════════════
+function renderOrdersTable(search='',statusF=''){
+  let list=orders.filter(o=>{
+    const ms=!search||o.customer?.toLowerCase().includes(search.toLowerCase())||String(o.id).includes(search);
+    const mst=!statusF||o.status===statusF;
+    return ms&&mst;
+  });
+  document.getElementById('orders-tbody').innerHTML=list.length===0
+    ?'<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📭</div><p>No orders found. Share your store to start receiving orders!</p></div></td></tr>'
+    :list.slice().reverse().map(o=>`<tr style="cursor:pointer" onclick="viewOrder('${o.id}')">
+      <td><strong>#${o.id}</strong></td>
+      <td><div class="t-name">${o.date||'-'}</div></td>
+      <td><div class="t-name">${o.customer}</div><div class="t-sub">${o.email||''}</div></td>
+      <td>${o.items||'-'}</td>
+      <td><strong>$${o.total}</strong></td>
+      <td><span class="badge badge-${o.payment==='paypal'?'blue':o.payment==='stripe'?'purple':'yellow'}">${o.payment||'card'}</span></td>
+      <td onclick="event.stopPropagation()">
+        <select onchange="setOrderStatus('${o.id}',this.value)" style="padding:.3rem .5rem;border:1px solid var(--border);border-radius:6px;font-size:.72rem;font-family:inherit;cursor:pointer">
+          <option value="pending" ${o.status==='pending'?'selected':''}>🔴 Pending</option>
+          <option value="processing" ${o.status==='processing'?'selected':''}>🟡 Processing</option>
+          <option value="shipped" ${o.status==='shipped'?'selected':''}>🔵 Shipped</option>
+          <option value="delivered" ${o.status==='delivered'?'selected':''}>🟢 Delivered</option>
+          <option value="cancelled" ${o.status==='cancelled'?'selected':''}>⚫ Cancelled</option>
+        </select>
+      </td>
+      <td><button class="btn btn-sm" onclick="event.stopPropagation();viewOrder('${o.id}')">👁️ View</button></td>
+    </tr>`).join('');
+}
+
+function searchOrders(q){ renderOrdersTable(q); }
+function filterOrderStatus(s){ renderOrdersTable('',s); }
+
+function setOrderStatus(id,status){
+  const o=orders.find(x=>x.id===id); if(!o) return;
+  o.status=status;
+  DB.set('orders',orders);
+  showToast(`✅ Order #${id} marked as ${status}`,'success');
+}
+
+function viewOrder(id){
+  const o=orders.find(x=>x.id===id); if(!o) return;
+  document.getElementById('order-modal-body').innerHTML=`
+    <div class="grid-2" style="gap:.8rem;margin-bottom:1rem">
+      <div><div class="f-label">Order ID</div><strong>#${o.id}</strong></div>
+      <div><div class="f-label">Date</div>${o.date||'-'}</div>
+      <div><div class="f-label">Customer</div><strong>${o.customer}</strong></div>
+      <div><div class="f-label">Email</div>${o.email||'-'}</div>
+      <div><div class="f-label">Phone</div>${o.phone||'-'}</div>
+      <div><div class="f-label">Payment</div><span class="badge badge-blue">${o.payment||'card'}</span></div>
+    </div>
+    <div style="background:#F9FAFB;border-radius:8px;padding:.8rem;margin-bottom:.8rem;font-size:.82rem">
+      <div class="f-label">Items</div><p>${o.items||'-'}</p>
+      <div class="f-label" style="margin-top:.5rem">Delivery Address</div><p>${o.address||'-'}</p>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;font-size:.9rem;font-weight:700;padding:.5rem 0;border-bottom:1px solid var(--border);margin-bottom:.8rem">
+      <span>Total</span><span style="color:var(--green)">$${o.total} AUD</span>
+    </div>
+    <div class="f-group"><label class="f-label">Update Status</label>
+      <select class="f-select" id="modal-status" onchange="setOrderStatus('${o.id}',this.value)">
+        <option value="pending" ${o.status==='pending'?'selected':''}>🔴 Pending</option>
+        <option value="processing" ${o.status==='processing'?'selected':''}>🟡 Processing</option>
+        <option value="shipped" ${o.status==='shipped'?'selected':''}>🔵 Shipped</option>
+        <option value="delivered" ${o.status==='delivered'?'selected':''}>🟢 Delivered</option>
+        <option value="cancelled" ${o.status==='cancelled'?'selected':''}>⚫ Cancelled</option>
+      </select>
+    </div>
+    <div class="f-group"><label class="f-label">Tracking Number (for shipped orders)</label>
+      <input class="f-input" id="modal-tracking" placeholder="e.g. AP1234567890AU" value="${o.tracking||''}">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="saveOrderTracking('${o.id}')">💾 Save & Send Tracking Email</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteOrder('${o.id}')">🗑️ Delete Order</button>
+    </div>`;
+  document.getElementById('order-modal').classList.add('open');
+}
+
+function saveOrderTracking(id){
+  const tracking=document.getElementById('modal-tracking').value;
+  const status=document.getElementById('modal-status').value;
+  const o=orders.find(x=>x.id===id); if(!o) return;
+  o.tracking=tracking; o.status=status;
+  DB.set('orders',orders);
+  closeModal();
+  showToast('✅ Order updated! In production, tracking email would be sent automatically.','success');
+}
+
+function deleteOrder(id){ if(!confirm('Delete order #'+id+'?')) return; orders=orders.filter(o=>o.id!==id); DB.set('orders',orders); closeModal(); renderOrdersTable(); showToast('🗑️ Order deleted','info'); }
+function closeModal(){ document.getElementById('order-modal').classList.remove('open'); }
+
+function exportOrdersCSV(){
+  if(!orders.length){showToast('❌ No orders to export','error');return;}
+  const rows=['Order ID,Date,Customer,Email,Items,Total,Status,Tracking',...orders.map(o=>`${o.id},${o.date||''},${o.customer||''},${o.email||''},${(o.items||'').replace(/,/g,';')},$${o.total},${o.status||''},${o.tracking||''}`)];
+  const blob=new Blob([rows.join('\n')],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='pure-home-orders.csv'; a.click();
+  showToast('📥 Orders exported successfully!','success');
+}
+
+// ═══════════════════════════════════════════
+// PRODUCTS
+// ═══════════════════════════════════════════
+function renderProductsTable(search='',catF=''){
+  let list=products.filter(p=>{
+    const ms=!search||p.name.toLowerCase().includes(search.toLowerCase());
+    const mc=!catF||p.cat===catF;
+    return ms&&mc;
+  });
+  document.getElementById('prod-count').textContent=products.length;
+  document.getElementById('prods-tbody').innerHTML=list.length===0
+    ?'<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🛍️</div><p>No products found</p></div></td></tr>'
+    :list.map(p=>{
+      const cost=(p.cost||0)+(p.shipCost||0);
+      const profit=p.price-cost;
+      const margin=p.price>0?Math.round(profit/p.price*100):0;
+      return `<tr>
+        <td><img class="t-img" src="${p.imgs[0]||''}" onerror="this.style.background='#e5e7eb'"></td>
+        <td><div class="t-name">${p.name}</div><div class="t-sub">${p.ship||''}</div></td>
+        <td><span class="badge badge-${p.cat==='massage'?'green':p.cat==='air'?'blue':'purple'}">${p.cat}</span></td>
+        <td><strong>$${p.price}</strong></td>
+        <td style="color:var(--text2)">$${cost.toFixed(2)}</td>
+        <td style="color:var(--green);font-weight:700">$${profit.toFixed(2)} (${margin}%)</td>
+        <td>${p.ship||'-'}</td>
+        <td><span class="badge ${p.status==='active'?'badge-green':'badge-yellow'}">${p.status}</span></td>
+        <td><div style="display:flex;gap:.3rem">
+          <button class="btn btn-sm" onclick="editProduct('${p.id}')">✏️</button>
+          <button class="btn btn-sm" style="color:var(--red)" onclick="deleteProduct('${p.id}')">🗑️</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+}
+
+function searchProds(q){ renderProductsTable(q); }
+function filterProdCat(c){ renderProductsTable('',c); }
+
+function resetProdForm(){
+  const fields=['ep-id','ep-name','ep-badge','ep-short','ep-desc','ep-feats','ep-img1','ep-img2','ep-img3','ep-price','ep-old','ep-cost','ep-ship-cost','ep-link','ep-ship','ep-seo-title','ep-seo-desc'];
+  fields.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('ep-cat').value='massage';
+  document.getElementById('ep-status').value='active';
+  document.getElementById('ep-del-btn').style.display='none';
+  document.getElementById('ep-img-preview').innerHTML='';
+  document.getElementById('ep-profit-box').style.display='none';
+  document.getElementById('ep-reviews-list').innerHTML='';
+}
+
+function editProduct(id){
+  const p=products.find(x=>x.id===id); if(!p) return;
+  resetProdForm();
+  go('add-product');
+  setTimeout(()=>{
+    document.getElementById('ep-id').value=p.id;
+    document.getElementById('ep-name').value=p.name||'';
+    document.getElementById('ep-badge').value=p.badge||'';
+    document.getElementById('ep-cat').value=p.cat||'massage';
+    document.getElementById('ep-short').value=p.shortDesc||'';
+    document.getElementById('ep-desc').value=p.desc||'';
+    document.getElementById('ep-feats').value=(p.feats||[]).join('\n');
+    document.getElementById('ep-img1').value=p.imgs[0]||'';
+    document.getElementById('ep-img2').value=p.imgs[1]||'';
+    document.getElementById('ep-img3').value=p.imgs[2]||'';
+    document.getElementById('ep-price').value=p.price||'';
+    document.getElementById('ep-old').value=p.oldPrice||'';
+    document.getElementById('ep-cost').value=p.cost||'';
+    document.getElementById('ep-ship-cost').value=p.shipCost||0;
+    document.getElementById('ep-link').value=p.link||'';
+    document.getElementById('ep-ship').value=p.ship||'';
+    document.getElementById('ep-seo-title').value=p.seoTitle||'';
+    document.getElementById('ep-seo-desc').value=p.seoDesc||'';
+    document.getElementById('ep-status').value=p.status||'active';
+    document.getElementById('ep-del-btn').style.display='inline-flex';
+    updateImgPreview(); calcProdProfit();
+    // Reviews
+    const rl=document.getElementById('ep-reviews-list');
+    rl.innerHTML='';
+    (p.reviews||[]).forEach(r=>addReviewField(r));
+  },100);
+}
+
+function saveProduct(){
+  const id=document.getElementById('ep-id').value;
+  const name=document.getElementById('ep-name').value.trim();
+  if(!name){showToast('❌ Product name is required','error');return;}
+  const imgs=[document.getElementById('ep-img1').value,document.getElementById('ep-img2').value,document.getElementById('ep-img3').value].filter(Boolean);
+  const feats=document.getElementById('ep-feats').value.split('\n').filter(Boolean);
+  // Collect reviews
+  const reviews=[];
+  document.querySelectorAll('.rev-entry').forEach(el=>{
+    const n=el.querySelector('.rev-name-in').value.trim();
+    const t=el.querySelector('.rev-text-in').value.trim();
+    const l=el.querySelector('.rev-loc-in').value.trim();
+    if(n&&t) reviews.push({name:n,loc:l,stars:5,text:t});
+  });
+  const data={
+    id:id||'p'+(Date.now()),name,badge:document.getElementById('ep-badge').value.trim(),
+    cat:document.getElementById('ep-cat').value,shortDesc:document.getElementById('ep-short').value.trim(),
+    desc:document.getElementById('ep-desc').value.trim(),feats,imgs,
+    price:parseFloat(document.getElementById('ep-price').value)||0,
+    oldPrice:parseFloat(document.getElementById('ep-old').value)||0,
+    cost:parseFloat(document.getElementById('ep-cost').value)||0,
+    shipCost:parseFloat(document.getElementById('ep-ship-cost').value)||0,
+    link:document.getElementById('ep-link').value.trim(),ship:document.getElementById('ep-ship').value.trim(),
+    seoTitle:document.getElementById('ep-seo-title').value.trim(),seoDesc:document.getElementById('ep-seo-desc').value.trim(),
+    status:document.getElementById('ep-status').value,reviews
+  };
+  if(id){ const i=products.findIndex(p=>p.id===id); if(i>-1)products[i]=data; else products.push(data); }
+  else products.push(data);
+  DB.set('products',products);
+  showToast('✅ Product saved successfully!','success');
+  go('products');
+}
+
+function deleteProduct(id){
+  if(!confirm('Delete this product permanently?')) return;
+  products=products.filter(p=>p.id!==id);
+  DB.set('products',products);
+  renderProductsTable();
+  showToast('🗑️ Product deleted','info');
+}
+
+function deleteCurrentProduct(){
+  const id=document.getElementById('ep-id').value;
+  if(id) deleteProduct(id);
+  go('products');
+}
+
+function calcProdProfit(){
+  const price=parseFloat(document.getElementById('ep-price').value)||0;
+  const cost=parseFloat(document.getElementById('ep-cost').value)||0;
+  const ship=parseFloat(document.getElementById('ep-ship-cost').value)||0;
+  if(price>0){
+    const total=cost+ship;
+    const profit=price-total;
+    const margin=Math.round(profit/price*100);
+    document.getElementById('ep-profit-val').textContent='$'+profit.toFixed(2);
+    document.getElementById('ep-margin-val').textContent=margin+'%';
+    document.getElementById('ep-totalcost-val').textContent='$'+total.toFixed(2);
+    document.getElementById('ep-profit-box').style.display='block';
+  }
+}
+
+function updateImgPreview(){
+  const imgs=[document.getElementById('ep-img1').value,document.getElementById('ep-img2').value,document.getElementById('ep-img3').value].filter(Boolean);
+  document.getElementById('ep-img-preview').innerHTML=imgs.map(src=>`<div class="img-preview-item"><img src="${src}" onerror="this.style.background='#e5e7eb'"></div>`).join('');
+}
+
+function addReviewField(r=null){
+  const div=document.createElement('div');
+  div.className='rev-entry';
+  div.style.cssText='border:1px solid var(--border);border-radius:8px;padding:.8rem;margin-bottom:.6rem;background:#FAFAFA';
+  div.innerHTML=`
+    <div class="grid-2" style="gap:.5rem;margin-bottom:.4rem">
+      <input class="f-input rev-name-in" placeholder="Reviewer Name" value="${r?r.name:''}">
+      <input class="f-input rev-loc-in" placeholder="Location e.g. Sydney, NSW" value="${r?r.loc||'':''}">
+    </div>
+    <textarea class="f-textarea rev-text-in" rows="2" placeholder="Review text...">${r?r.text:''}</textarea>
+    <button onclick="this.closest('.rev-entry').remove()" style="background:none;border:none;color:var(--red);font-size:.75rem;cursor:pointer;margin-top:.3rem">✕ Remove</button>`;
+  document.getElementById('ep-reviews-list').appendChild(div);
+}
+
+// ═══════════════════════════════════════════
+// BLOG
+// ═══════════════════════════════════════════
+function renderBlogTable(){
+  document.getElementById('blog-count').textContent=blogs.length;
+  document.getElementById('blog-tbody').innerHTML=blogs.length===0
+    ?'<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📝</div><p>No blog posts yet</p></div></td></tr>'
+    :blogs.map(b=>`<tr>
+      <td><img class="t-img" src="${b.img||''}" onerror="this.style.background='#e5e7eb'"></td>
+      <td><div class="t-name">${b.title}</div><div class="t-sub">${b.excerpt?.substring(0,60)||''}</div></td>
+      <td><span class="badge badge-blue">${b.cat||'General'}</span></td>
+      <td>${b.author||'Admin'}</td>
+      <td>${b.date||'-'}</td>
+      <td><span class="badge ${b.status==='published'?'badge-green':'badge-yellow'}">${b.status}</span></td>
+      <td><div style="display:flex;gap:.3rem">
+        <button class="btn btn-sm" onclick="editBlog('${b.id}')">✏️ Edit</button>
+        <button class="btn btn-sm" style="color:var(--red)" onclick="deleteBlog('${b.id}')">🗑️</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+function resetBlogForm(){
+  ['eb-id','eb-title','eb-content','eb-excerpt','eb-cat','eb-img','eb-seo-title','eb-seo-desc','eb-keyword','eb-read'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('eb-author').value='Pure Home Team';
+  document.getElementById('eb-status').value='published';
+  document.getElementById('eb-del-btn').style.display='none';
+  document.getElementById('eb-img-wrap').style.display='none';
+}
+
+function editBlog(id){
+  const b=blogs.find(x=>x.id===id); if(!b) return;
+  resetBlogForm();
+  go('add-blog');
+  setTimeout(()=>{
+    document.getElementById('eb-id').value=b.id;
+    document.getElementById('eb-title').value=b.title||'';
+    document.getElementById('eb-content').value=b.content||'';
+    document.getElementById('eb-excerpt').value=b.excerpt||'';
+    document.getElementById('eb-cat').value=b.cat||'';
+    document.getElementById('eb-author').value=b.author||'Pure Home Team';
+    document.getElementById('eb-img').value=b.img||'';
+    document.getElementById('eb-seo-title').value=b.seoTitle||'';
+    document.getElementById('eb-seo-desc').value=b.seoDesc||'';
+    document.getElementById('eb-keyword').value=b.keyword||'';
+    document.getElementById('eb-read').value=b.readTime||'';
+    document.getElementById('eb-status').value=b.status||'published';
+    document.getElementById('eb-del-btn').style.display='inline-flex';
+    previewBlogImg();
+  },100);
+}
+
+function saveBlog(){
+  const id=document.getElementById('eb-id').value;
+  const title=document.getElementById('eb-title').value.trim();
+  if(!title){showToast('❌ Post title required','error');return;}
+  const data={
+    id:id||'b'+(Date.now()),title,content:document.getElementById('eb-content').value.trim(),
+    excerpt:document.getElementById('eb-excerpt').value.trim(),cat:document.getElementById('eb-cat').value.trim(),
+    author:document.getElementById('eb-author').value.trim(),img:document.getElementById('eb-img').value.trim(),
+    seoTitle:document.getElementById('eb-seo-title').value.trim(),seoDesc:document.getElementById('eb-seo-desc').value.trim(),
+    keyword:document.getElementById('eb-keyword').value.trim(),readTime:document.getElementById('eb-read').value.trim(),
+    status:document.getElementById('eb-status').value,
+    date:new Date().toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})
+  };
+  if(id){ const i=blogs.findIndex(b=>b.id===id); if(i>-1)blogs[i]=data; else blogs.push(data); }
+  else blogs.push(data);
+  DB.set('blogs',blogs);
+  showToast('✅ Blog post saved!','success');
+  go('blog');
+}
+
+function deleteBlog(id){
+  if(!confirm('Delete this post?')) return;
+  blogs=blogs.filter(b=>b.id!==id); DB.set('blogs',blogs);
+  renderBlogTable(); showToast('🗑️ Post deleted','info');
+}
+function deleteCurBlog(){ const id=document.getElementById('eb-id').value; if(id) deleteBlog(id); go('blog'); }
+
+function previewBlogImg(){
+  const url=document.getElementById('eb-img').value;
+  const wrap=document.getElementById('eb-img-wrap');
+  if(url){wrap.style.display='block';document.getElementById('eb-img-prev').src=url;}
+  else wrap.style.display='none';
+}
+
+function autoFillBlogSeo(){
+  const title=document.getElementById('eb-title').value;
+  const seoTitleEl=document.getElementById('eb-seo-title');
+  if(!seoTitleEl.value) seoTitleEl.value=title+' | Pure Home Store Australia';
+  updateSeoCounter('eb-seo-title','eb-seo-t-c',60);
+}
+
+// ═══════════════════════════════════════════
+// EMAIL MARKETING
+// ═══════════════════════════════════════════
+function renderEmailMarketing(){
+  renderCampaignTable();
+  renderSmsScripts();
+  // Attach live preview listeners
+  ['ec-subject','ec-greeting','ec-body','ec-cta','ec-footer'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.addEventListener('input',updateEmailPreview);
+  });
+}
+
+function updateEmailPreview(){
+  const s=v('ec-subject')||'Your subject line here';
+  const g=v('ec-greeting')||'Hi [Name],';
+  const b=v('ec-body')||'Your email body...';
+  const c=v('ec-cta')||'Shop Now';
+  const f=v('ec-footer')||'';
+  document.getElementById('prev-subject').textContent=s;
+  document.getElementById('prev-greeting').textContent=g;
+  document.getElementById('prev-body').textContent=b;
+  document.getElementById('prev-cta').textContent=c;
+  document.getElementById('prev-footer').textContent=f;
+}
+
+function saveCampaign(){
+  const name=v('ec-name').trim(), subject=v('ec-subject').trim();
+  if(!name||!subject){showToast('❌ Name and Subject required','error');return;}
+  emailCampaigns.push({id:'c'+(Date.now()),name,subject,greeting:v('ec-greeting'),body:v('ec-body'),cta:v('ec-cta'),link:v('ec-link'),footer:v('ec-footer'),date:new Date().toLocaleDateString('en-AU')});
+  DB.set('campaigns',emailCampaigns);
+  renderCampaignTable();
+  clearCampaignForm();
+  showToast('✅ Campaign saved!','success');
+}
+
+function clearCampaignForm(){ ['ec-name','ec-subject','ec-body','ec-cta','ec-link','ec-footer'].forEach(id=>document.getElementById(id).value=''); }
+
+function renderCampaignTable(){
+  const tb=document.getElementById('campaigns-tbody');
+  tb.innerHTML=emailCampaigns.length===0
+    ?'<tr><td colspan="4"><div class="empty-state"><div class="empty-icon">📧</div><p>No campaigns yet. Create your first!</p></div></td></tr>'
+    :emailCampaigns.slice().reverse().map(c=>`<tr><td><strong>${c.name}</strong></td><td>${c.subject}</td><td>${c.date}</td><td><button class="btn btn-danger btn-sm" onclick="deleteCampaign('${c.id}')">🗑️</button></td></tr>`).join('');
+}
+
+function deleteCampaign(id){ emailCampaigns=emailCampaigns.filter(c=>c.id!==id); DB.set('campaigns',emailCampaigns); renderCampaignTable(); }
+
+function renderSmsScripts(){
+  const scripts=[
+    {label:'🚀 Store Launch',text:"Hi [Name], Pure Home Store is now live! Premium massage guns, air purifiers & water filters — fast AU delivery. Free shipping this week → purehomestore.com.au\nReply STOP to opt out"},
+    {label:'💆 Massage Guns Sale',text:"Hi [Name], Our deep tissue massage guns start from just $17! Free AU shipping. 30-day returns. Perfect for muscle recovery → purehomestore.com.au/massage\nReply STOP"},
+    {label:'🌬️ Air Purifiers',text:"Hi [Name], Is your indoor air clean? Our H13 HEPA purifiers remove 99.97% of allergens & dust. From $27. Free AU delivery → purehomestore.com.au/air\nReply STOP"},
+    {label:'💧 Water Filters',text:"Hi [Name], Pure drinking water from your tap! Our water filters start at $15. Fast AU delivery, free shipping → purehomestore.com.au/water\nReply STOP"},
+    {label:'🎁 Weekend Flash Sale',text:"Hi [Name], WEEKEND ONLY: Extra 15% off everything at Pure Home Store! Use code WEEKEND15 → purehomestore.com.au\nOffer ends Sunday midnight. Reply STOP to opt out"},
+    {label:'📦 Follow-Up (Non-buyers)',text:"Hi [Name], You haven't ordered yet! Our top-rated massage gun is going fast. ⚡ Free AU shipping, 30-day returns → purehomestore.com.au\nReply STOP to opt out"},
+  ];
+  document.getElementById('sms-scripts-list').innerHTML=scripts.map(s=>`
+    <div class="card gap" style="margin-bottom:.8rem">
+      <div class="card-title" style="font-size:.82rem">${s.label}</div>
+      <p style="font-size:.78rem;color:var(--text2);line-height:1.7;white-space:pre-wrap">${s.text}</p>
+      <div style="font-size:.72rem;color:var(--text2);margin-top:.3rem">Characters: ${s.text.length} · Est. ${Math.ceil(s.text.length/160)} SMS</div>
+      <button class="btn btn-sm" onclick="copyToClipboard(\`${s.text.replace(/`/g,'\\`')}\`)" style="margin-top:.4rem">📋 Copy Script</button>
+    </div>`).join('');
+}
+
+function saveLeadInfo(){
+  DB.set('leads',{file:v('leads-file'),notes:v('leads-notes')});
+  showToast('✅ Lead info saved!','success');
+}
+
+// ═══════════════════════════════════════════
+// SEO
+// ═══════════════════════════════════════════
+function loadSeoForm(){
+  document.getElementById('seo-site-title').value=seoData.siteTitle||'';
+  document.getElementById('seo-site-desc').value=seoData.siteDesc||'';
+  document.getElementById('seo-keywords').value=seoData.keywords||'';
+  document.getElementById('seo-ga').value=seoData.ga||'';
+  document.getElementById('seo-pixel').value=seoData.pixel||'';
+  // Page-specific
+  ['home','shop','blog','about'].forEach(page=>{
+    const ti=document.getElementById('seo-'+page+'-title');
+    const de=document.getElementById('seo-'+page+'-desc');
+    if(ti) ti.value=seoData[page+'Title']||'';
+    if(de) de.value=seoData[page+'Desc']||'';
+  });
+  // Update counters
+  updateSeoCounter('seo-site-title','seo-st-c',60);
+  updateSeoCounter('seo-site-desc','seo-sd-c',160);
+  renderSeoHealth();
+}
+
+function saveSEO(){
+  seoData.siteTitle=v('seo-site-title'); seoData.siteDesc=v('seo-site-desc');
+  seoData.keywords=v('seo-keywords'); seoData.biz=v('seo-biz-name');
+  DB.set('seo',seoData); renderSeoHealth();
+  showToast('✅ SEO settings saved!','success');
+}
+
+function savePageSEO(page){
+  const t=document.getElementById('seo-'+page+'-title')?.value||'';
+  const d=document.getElementById('seo-'+page+'-desc')?.value||'';
+  seoData[page+'Title']=t; seoData[page+'Desc']=d;
+  DB.set('seo',seoData);
+  showToast('✅ '+page.charAt(0).toUpperCase()+page.slice(1)+' SEO saved!','success');
+}
+
+function saveTracking(){
+  seoData.ga=v('seo-ga')||seoData.ga;
+  seoData.gsc=v('seo-gsc')||seoData.gsc;
+  seoData.pixel=v('seo-pixel')||seoData.pixel;
+  seoData.tiktok=v('seo-tiktok')||seoData.tiktok;
+  DB.set('seo',seoData);
+  showToast('✅ Tracking codes saved!','success');
+}
+
+function renderSeoHealth(){
+  const checks=[
+    {ok:!!seoData.siteTitle,text:'Global meta title set'},
+    {ok:(seoData.siteTitle||'').length<=60,text:'Meta title ≤ 60 characters'},
+    {ok:!!seoData.siteDesc,text:'Global meta description set'},
+    {ok:(seoData.siteDesc||'').length<=160,text:'Meta description ≤ 160 characters'},
+    {ok:!!seoData.keywords,text:'Global keywords defined'},
+    {ok:!!seoData.ga,text:'Google Analytics connected'},
+    {ok:!!seoData.pixel,text:'Facebook Pixel connected'},
+    {ok:blogs.length>0,text:'Blog posts published (boosts SEO)'},
+    {ok:products.every(p=>p.seoTitle),text:'All products have SEO titles'},
+  ];
+  const score=Math.round(checks.filter(c=>c.ok).length/checks.length*100);
+  document.getElementById('seo-health-list').innerHTML=`
+    <div class="seo-score">
+      <div class="seo-bar"><div class="seo-fill" style="width:${score}%;background:${score>70?'var(--green)':score>40?'var(--yellow)':'var(--red)'}"></div></div>
+      <div class="seo-num" style="color:${score>70?'var(--green)':score>40?'var(--yellow)':'var(--red)'}">${score}%</div>
+    </div>
+    `+checks.map(c=>`<div style="display:flex;align-items:center;gap:.5rem;padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.8rem"><span>${c.ok?'✅':'❌'}</span><span style="color:${c.ok?'var(--text)':'var(--text2)'}">${c.text}</span></div>`).join('');
+}
+
+// ═══════════════════════════════════════════
+// EMAIL SETTINGS
+// ═══════════════════════════════════════════
+function loadEmailSettings(){
+  document.getElementById('smtp-platform').value=smtpData.platform||'brevo';
+  document.getElementById('smtp-name').value=smtpData.name||'Pure Home Store';
+  document.getElementById('smtp-email').value=smtpData.email||'';
+  document.getElementById('smtp-reply').value=smtpData.reply||'';
+  document.getElementById('smtp-host').value=smtpData.host||'smtp-relay.brevo.com';
+  document.getElementById('smtp-port').value=smtpData.port||587;
+  document.getElementById('smtp-user').value=smtpData.user||'';
+  // Load templates
+  const tpls=emailTemplates;
+  if(tpls['order-confirm-subject']) document.getElementById('tpl-oc-subject').value=tpls['order-confirm-subject'];
+  if(tpls['order-confirm-body']) document.getElementById('tpl-oc-body').value=tpls['order-confirm-body'];
+  if(tpls['shipped-subject']) document.getElementById('tpl-ship-subject').value=tpls['shipped-subject'];
+  if(tpls['shipped-body']) document.getElementById('tpl-ship-body').value=tpls['shipped-body'];
+}
+
+function saveSMTP(){
+  smtpData={platform:v('smtp-platform'),name:v('smtp-name'),email:v('smtp-email'),reply:v('smtp-reply'),host:v('smtp-host'),port:v('smtp-port'),user:v('smtp-user'),enc:document.getElementById('smtp-enc').value};
+  DB.set('smtp',smtpData);
+  showToast('✅ SMTP settings saved!','success');
+}
+
+function saveEmailTemplate(type){
+  if(type==='order-confirm'){emailTemplates['order-confirm-subject']=v('tpl-oc-subject');emailTemplates['order-confirm-body']=v('tpl-oc-body');}
+  if(type==='shipped'){emailTemplates['shipped-subject']=v('tpl-ship-subject');emailTemplates['shipped-body']=v('tpl-ship-body');}
+  if(type==='welcome'){emailTemplates['welcome-subject']=v('tpl-welcome-subject');emailTemplates['welcome-body']=v('tpl-welcome-body');}
+  if(type==='abandoned'){emailTemplates['abandon-subject']=v('tpl-abandon-subject');emailTemplates['abandon-body']=v('tpl-abandon-body');}
+  DB.set('email-tpls',emailTemplates);
+  showToast('✅ Email template saved!','success');
+}
+
+// ═══════════════════════════════════════════
+// PAYMENTS
+// ═══════════════════════════════════════════
+function loadPayments(){
+  ['paypal','stripe','afterpay','bank'].forEach(p=>{
+    const on=paymentData[p]?.enabled||false;
+    const toggle=document.getElementById('pp-'+p+'-on');
+    const wrap=document.getElementById('pp-'+p);
+    const badge=document.getElementById('pp-'+p+'-badge');
+    if(toggle) toggle.checked=on;
+    if(wrap){wrap.classList.toggle('enabled',on);}
+    if(badge) badge.style.display=on?'inline-flex':'none';
+    // Load saved values
+    if(p==='paypal'&&paymentData.paypal){document.getElementById('pp-paypal-email').value=paymentData.paypal.email||'';document.getElementById('pp-paypal-client').value=paymentData.paypal.client||'';}
+    if(p==='stripe'&&paymentData.stripe){document.getElementById('pp-stripe-pub').value=paymentData.stripe.pub||'';}
+    if(p==='bank'&&paymentData.bank){document.getElementById('pp-bank-name').value=paymentData.bank.name||'';document.getElementById('pp-bank-bsb').value=paymentData.bank.bsb||'';document.getElementById('pp-bank-acc').value=paymentData.bank.acc||'';}
+  });
+}
+
+function toggleProvider(p){
+  const on=document.getElementById('pp-'+p+'-on').checked;
+  if(!paymentData[p]) paymentData[p]={};
+  paymentData[p].enabled=on;
+  document.getElementById('pp-'+p).classList.toggle('enabled',on);
+  const badge=document.getElementById('pp-'+p+'-badge');
+  if(badge) badge.style.display=on?'inline-flex':'none';
+  DB.set('payments',paymentData);
+}
+
+function saveProvider(p){
+  if(!paymentData[p]) paymentData[p]={};
+  paymentData[p].enabled=document.getElementById('pp-'+p+'-on').checked;
+  if(p==='paypal'){paymentData.paypal.email=v('pp-paypal-email');paymentData.paypal.client=v('pp-paypal-client');paymentData.paypal.mode=document.getElementById('pp-paypal-mode').value;}
+  if(p==='stripe'){paymentData.stripe.pub=v('pp-stripe-pub');paymentData.stripe.sec=v('pp-stripe-sec');paymentData.stripe.wh=v('pp-stripe-wh');}
+  if(p==='afterpay'){paymentData.afterpay.id=v('pp-afterpay-id');}
+  if(p==='bank'){paymentData.bank.name=v('pp-bank-name');paymentData.bank.bsb=v('pp-bank-bsb');paymentData.bank.acc=v('pp-bank-acc');paymentData.bank.accName=v('pp-bank-acc-name');}
+  DB.set('payments',paymentData);
+  showToast('✅ '+p.charAt(0).toUpperCase()+p.slice(1)+' saved & connected!','success');
+}
+
+// ═══════════════════════════════════════════
+// STORE SETTINGS
+// ═══════════════════════════════════════════
+function loadStoreSettings(){
+  document.getElementById('ss-name').value=storeSettings.storeName||'Pure Home Store';
+  document.getElementById('ss-tagline').value=storeSettings.tagline||'';
+  document.getElementById('ss-domain').value=storeSettings.domain||'';
+  document.getElementById('ss-email').value=storeSettings.email||'';
+  document.getElementById('ss-phone').value=storeSettings.phone||'';
+  document.getElementById('ss-abn').value=storeSettings.abn||'';
+  document.getElementById('ss-address').value=storeSettings.address||'';
+  document.getElementById('ss-free-min').value=storeSettings.freeShipMin||50;
+  document.getElementById('ss-flat').value=storeSettings.flatRate||6.95;
+  document.getElementById('ss-express').value=storeSettings.express||14.95;
+  document.getElementById('ss-notif-email').value=storeSettings.notifEmail||'';
+}
+
+function saveStoreSettings(){
+  storeSettings={storeName:v('ss-name'),tagline:v('ss-tagline'),domain:v('ss-domain'),email:v('ss-email'),phone:v('ss-phone'),abn:v('ss-abn'),address:v('ss-address'),freeShipMin:parseFloat(v('ss-free-min'))||50,flatRate:parseFloat(v('ss-flat'))||6.95,express:parseFloat(v('ss-express'))||14.95,notifEmail:v('ss-notif-email')};
+  DB.set('store',storeSettings);
+  showToast('✅ Store settings saved!','success');
+}
+
+function changeAdminPass(){
+  const curr=v('ss-curr-pass'), newP=v('ss-new-pass'), conf=v('ss-conf-pass');
+  if(curr!==ADMIN_PASS){showToast('❌ Current password is wrong','error');return;}
+  if(newP!==conf){showToast('❌ Passwords do not match','error');return;}
+  if(newP.length<6){showToast('❌ Password must be at least 6 characters','error');return;}
+  ADMIN_PASS=newP; DB.set('admin_pass',ADMIN_PASS);
+  document.getElementById('ss-curr-pass').value=''; document.getElementById('ss-new-pass').value=''; document.getElementById('ss-conf-pass').value='';
+  showToast('✅ Password updated successfully!','success');
+}
+
+function exportAllData(){
+  const data={products,orders,blogs,emailCampaigns,storeSettings,seoData,paymentData,smtpData,emailTemplates,exportDate:new Date().toISOString()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='purehomestore-backup.json'; a.click();
+  showToast('📥 Full backup exported!','success');
+}
+
+function resetAllData(){
+  ['products','orders','blogs','campaigns','store','seo','payments','smtp','email-tpls'].forEach(k=>localStorage.removeItem('phs2_'+k));
+  loadAllData(); renderDashboard();
+  showToast('🗑️ All data reset to defaults','info');
+}
+
+// ═══════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════
+function v(id){ return document.getElementById(id)?.value||''; }
+
+function updateSeoCounter(inputId, counterId, max){
+  const el=document.getElementById(inputId);
+  const counter=document.getElementById(counterId);
+  if(!el||!counter) return;
+  const len=el.value.length;
+  counter.textContent=len+'/'+max;
+  counter.className=len>max?'red-text':len>=max*0.85?'char-counter':'green-text';
+}
+
+function updateSmtpHelp(){
+  const p=v('smtp-platform');
+  const hosts={brevo:'smtp-relay.brevo.com',sendgrid:'smtp.sendgrid.net',gmail:'smtp.gmail.com',mailchimp:'smtp.mandrillapp.com'};
+  const ports={brevo:587,sendgrid:587,gmail:587,mailchimp:587};
+  if(hosts[p]){document.getElementById('smtp-host').value=hosts[p];document.getElementById('smtp-port').value=ports[p]||587;}
+}
+
+function showToast(msg, type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show '+type;
+  setTimeout(()=>t.className='toast',3200);
+}
+
+function copyToClipboard(text){
+  navigator.clipboard?.writeText(text).then(()=>showToast('📋 Copied to clipboard!','success'));
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+// Check if already "logged in" (session)
+loadAllData();
+</script>
+</body>
+</html>
