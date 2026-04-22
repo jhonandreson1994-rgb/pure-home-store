@@ -238,6 +238,8 @@ footer{background:var(--deep);color:rgba(255,255,255,.62);padding:3.5rem 5% 1.8r
   .fr{grid-template-columns:1fr}
 }
 </style>
+  <!-- Netlify Identity Widget -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
 
@@ -762,6 +764,17 @@ function showNotif(msg){
 
 // ── INIT ──
 renderHome();
+</script>
+<script>
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", user => {
+      if (!user) {
+        window.netlifyIdentity.on("login", () => {
+          document.location.href = "/admin/";
+        });
+      }
+    });
+  }
 </script>
 </body>
 </html>

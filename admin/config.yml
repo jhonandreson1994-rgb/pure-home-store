@@ -1,27 +1,39 @@
 backend:
   name: git-gateway
-  branch: main   # tumhari repo ki branch
+  branch: main
 
+# Media files ke liye
 media_folder: "uploads"
 public_folder: "/uploads"
 
-collections:
-  - name: "pages"
-    label: "Pages"
-    files:
-      - file: "index.html"
-        label: "Home Page"
-        name: "home"
-        fields:
-          - {label: "Title", name: "title", widget: "string"}
-          - {label: "Content", name: "body", widget: "markdown"}
+# Slug settings
+slug:
+  encoding: "ascii"
+  clean_accents: true
 
+collections:
+  # Blog posts
   - name: "blog"
-    label: "Blog"
+    label: "Blog Posts"
     folder: "blog"
     create: true
-    slug: "{{slug}}"
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - {label: "Title", name: "title", widget: "string"}
-      - {label: "Publish Date", name: "date", widget: "datetime"}
-      - {label: "Body", name: "body", widget: "markdown"}
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Publish Date", name: "date", widget: "datetime" }
+      - { label: "Featured Image", name: "image", widget: "image", required: false }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  # Site settings — yahan tum website ki text content edit kar sako ge
+  - name: "settings"
+    label: "Site Settings"
+    files:
+      - file: "content/site-settings.json"
+        label: "General Settings"
+        name: "site_settings"
+        fields:
+          - { label: "Site Title", name: "title", widget: "string", default: "Pure Home Store" }
+          - { label: "Hero Heading Line 1", name: "hero_line1", widget: "string", default: "Your Home." }
+          - { label: "Hero Heading Line 2", name: "hero_line2", widget: "string", default: "Purified." }
+          - { label: "Hero Subtitle", name: "hero_subtitle", widget: "text" }
+          - { label: "Hero Tag Text", name: "hero_tag", widget: "string", default: "🌿 Free Shipping Across Australia" }
