@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pure Home Store — Wellness Delivered Across Australia</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --deep:#0D1F16;--forest:#1B4332;--mid:#2D6A4F;--sage:#52B788;--mint:#D8F3DC;
+  --sand:#FDF6EC;--warm:#E9762B;--warm-lt:#FEF0E4;--cream:#FAFAF7;
+  --border:#E5EDE8;--gray:#7A8C82;--white:#FFFFFF;--shadow:rgba(13,31,22,.09);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--cream);color:var(--deep)}
+.page{display:none;animation:fadeUp .35s ease}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:100;background:var(--white);border-bottom:1px solid var(--border);height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 5%;box-shadow:0 2px 20px var(--shadow)}
+.logo{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:var(--deep);cursor:pointer}
+.logo span{color:var(--mid)}
+.nav-links{display:flex;gap:1.8rem;list-style:none}
+.nav-links a{font-size:.8rem;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--gray);text-decoration:none;cursor:pointer;transition:color .2s}
+.nav-links a:hover{color:var(--mid)}
+.cart-btn{background:var(--deep);color:var(--white);border:none;padding:.5rem 1.3rem;font-family:inherit;font-size:.82rem;font-weight:600;cursor:pointer;border-radius:50px;transition:background .2s}
+.cart-btn:hover{background:var(--mid)}
+
+/* ── HERO ── */
+.hero{min-height:88vh;display:flex;align-items:center;padding:5rem 5% 4rem;background:linear-gradient(140deg,#0D1F16 0%,#1B4332 55%,#1a4a30 100%);position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;right:-80px;top:-80px;width:550px;height:550px;background:radial-gradient(circle,rgba(82,183,136,.13) 0%,transparent 68%);pointer-events:none}
+.hero-content{max-width:560px;z-index:1;position:relative}
+.hero-tag{display:inline-flex;align-items:center;gap:.4rem;background:rgba(82,183,136,.15);color:#74c99b;border:1px solid rgba(82,183,136,.3);font-size:.7rem;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;padding:.35rem .9rem;border-radius:50px;margin-bottom:1.5rem}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,5.5vw,4.5rem);font-weight:700;line-height:1.06;color:#fff;margin-bottom:1.3rem}
+.hero h1 em{color:#74c99b;font-style:italic}
+.hero p{font-size:.98rem;color:rgba(255,255,255,.7);line-height:1.75;margin-bottom:2.3rem;max-width:450px}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap}
+.btn-p{background:var(--warm);color:#fff;border:none;padding:.88rem 2rem;font-family:inherit;font-size:.9rem;font-weight:700;cursor:pointer;border-radius:50px;transition:all .2s}
+.btn-p:hover{background:#d4661f;transform:translateY(-2px)}
+.btn-o{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.35);padding:.88rem 2rem;font-family:inherit;font-size:.9rem;font-weight:600;cursor:pointer;border-radius:50px;transition:all .2s}
+.btn-o:hover{border-color:#fff;background:rgba(255,255,255,.07)}
+.hero-stats{display:flex;gap:2.5rem;margin-top:3.5rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,.1)}
+.stat-n{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:700;color:#fff}
+.stat-l{font-size:.72rem;color:rgba(255,255,255,.45);margin-top:.1rem}
+
+/* ── SECTIONS ── */
+section{padding:4.5rem 5%}
+.sec-label{font-size:.7rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--mid);margin-bottom:.65rem}
+.sec-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,2.7rem);font-weight:700;line-height:1.1;margin-bottom:.9rem}
+.sec-sub{color:var(--gray);line-height:1.75;max-width:480px;font-size:.93rem}
+
+/* ── CATS ── */
+.cats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.2rem;margin-top:2.5rem}
+.cat-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.8rem;cursor:pointer;transition:all .3s;text-align:center}
+.cat-card:hover{transform:translateY(-5px);box-shadow:0 18px 36px var(--shadow);border-color:var(--sage)}
+.cat-img{width:80px;height:80px;object-fit:cover;border-radius:12px;margin:0 auto .9rem;display:block}
+.cat-name{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:.25rem}
+.cat-count{font-size:.75rem;color:var(--gray)}
+
+/* ── PRODUCT CARDS ── */
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:1.4rem;margin-top:2.5rem}
+.prod-card{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .3s}
+.prod-card:hover{transform:translateY(-5px);box-shadow:0 18px 36px var(--shadow)}
+.prod-img-wrap{position:relative;height:210px;overflow:hidden;background:#f5f5f5}
+.prod-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
+.prod-card:hover .prod-img-wrap img{transform:scale(1.06)}
+.prod-thumb-row{display:flex;gap:4px;padding:4px;background:#f8f8f8;border-bottom:1px solid var(--border)}
+.prod-thumb{width:36px;height:36px;object-fit:cover;border-radius:4px;cursor:pointer;border:2px solid transparent;transition:border-color .2s;flex-shrink:0}
+.prod-thumb.active{border-color:var(--mid)}
+.prod-info{padding:1.1rem}
+.prod-badge{display:inline-block;background:var(--mint);color:var(--forest);font-size:.62rem;font-weight:700;padding:.18rem .6rem;border-radius:50px;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.5px}
+.prod-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:.3rem;line-height:1.3}
+.prod-desc{font-size:.76rem;color:var(--gray);margin-bottom:.9rem;line-height:1.5}
+.prod-foot{display:flex;align-items:center;justify-content:space-between}
+.prod-price{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700}
+.prod-price small{font-family:inherit;font-size:.78rem;color:var(--gray);text-decoration:line-through;margin-left:.2rem}
+.add-btn{background:var(--deep);color:#fff;border:none;padding:.46rem 1.1rem;font-size:.76rem;font-weight:700;border-radius:50px;cursor:pointer;transition:background .2s}
+.add-btn:hover{background:var(--mid)}
+
+/* ── TRUST ── */
+.trust{background:var(--deep);padding:3rem 5%;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:2rem;text-align:center}
+.trust-icon{font-size:1.8rem;margin-bottom:.6rem}
+.trust-t{font-size:.85rem;font-weight:600;color:#fff;margin-bottom:.2rem}
+.trust-s{font-size:.72rem;color:rgba(255,255,255,.45)}
+
+/* ── FILTER ── */
+.filter-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.filt-btn{padding:.42rem 1rem;border-radius:50px;font-family:inherit;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid var(--border);background:var(--white);color:var(--deep)}
+.filt-btn.active,.filt-btn:hover{background:var(--deep);color:#fff;border-color:var(--deep)}
+
+/* ── ABOUT ── */
+.about-hero{background:linear-gradient(135deg,var(--warm-lt),var(--sand));padding:5rem 5% 3rem;text-align:center;border-bottom:1px solid var(--border)}
+.about-hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,4.5vw,3.3rem);font-weight:700}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;max-width:980px;margin:0 auto}
+.about-txt h2{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:700;margin-bottom:1rem}
+.about-txt p{color:var(--gray);line-height:1.8;margin-bottom:.9rem;font-size:.93rem}
+.about-visual{background:linear-gradient(135deg,var(--mid),var(--deep));border-radius:20px;height:320px;display:flex;align-items:center;justify-content:center;font-size:7rem}
+.vals-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2.5rem;max-width:860px;margin-left:auto;margin-right:auto}
+.val-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.3rem;text-align:center}
+.val-card .ico{font-size:1.7rem;margin-bottom:.65rem}
+.val-card h4{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:.3rem}
+.val-card p{font-size:.76rem;color:var(--gray);line-height:1.6}
+
+/* ── POLICY ── */
+.pol-hero{background:var(--white);border-bottom:1px solid var(--border);padding:3.5rem 5%;text-align:center}
+.pol-hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,2.7rem);font-weight:700}
+.pol-hero p{color:var(--gray);margin-top:.4rem;font-size:.85rem}
+.pol-body{max-width:760px;margin:0 auto;padding:3rem 5%}
+.pol-body h2{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin:1.8rem 0 .6rem}
+.pol-body p{color:#555;line-height:1.8;margin-bottom:.8rem;font-size:.91rem}
+.pol-body ul{color:#555;line-height:1.8;padding-left:1.4rem;margin-bottom:.8rem}
+.pol-body li{margin-bottom:.35rem;font-size:.91rem}
+
+/* ── PRODUCT DETAIL ── */
+.prod-detail{display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:start;max-width:1080px;margin:0 auto;padding:3rem 5%}
+.gal-main{border-radius:16px;overflow:hidden;height:400px;background:#f5f5f5;position:relative}
+.gal-main img{width:100%;height:100%;object-fit:cover;transition:opacity .3s}
+.gal-thumbs{display:flex;gap:.5rem;margin-top:.7rem;flex-wrap:wrap}
+.gal-thumb{width:62px;height:62px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:all .2s}
+.gal-thumb.active{border-color:var(--mid);opacity:1}
+.gal-thumb:hover{border-color:var(--sage)}
+.det-info h1{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;margin-bottom:.4rem;line-height:1.2}
+.stars{color:var(--warm);font-size:.92rem;margin-bottom:.8rem}
+.det-price{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:700}
+.price-old{font-size:.88rem;color:var(--gray);text-decoration:line-through;margin-left:.4rem}
+.save-badge{display:inline-block;background:#E8F5E9;color:#1B5E20;font-size:.72rem;font-weight:700;padding:.22rem .7rem;border-radius:50px;margin:0.4rem 0 1.1rem}
+.det-desc{color:var(--gray);line-height:1.78;margin-bottom:1.2rem;font-size:.88rem}
+.feats{margin-bottom:1.7rem}
+.feat-item{display:flex;align-items:center;gap:.5rem;padding:.35rem 0;border-bottom:1px solid var(--border);font-size:.84rem}
+.feat-check{color:var(--mid);font-weight:700}
+.qty-row{display:flex;align-items:center;gap:1rem;margin-bottom:1.4rem}
+.qty-lbl{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.qty-btn{width:32px;height:32px;border:1.5px solid var(--border);background:var(--white);border-radius:50%;font-size:1rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.qty-btn:hover{background:var(--deep);color:#fff;border-color:var(--deep)}
+.qty-n{font-size:1rem;font-weight:700;min-width:26px;text-align:center}
+.buy-btn{width:100%;background:var(--deep);color:#fff;border:none;padding:1rem;font-family:inherit;font-size:.92rem;font-weight:700;border-radius:50px;cursor:pointer;transition:all .2s;margin-bottom:.75rem}
+.buy-btn:hover{background:var(--mid);transform:translateY(-2px)}
+.buy-btn-o{width:100%;background:transparent;color:var(--deep);border:1.5px solid var(--deep);padding:1rem;font-family:inherit;font-size:.92rem;font-weight:700;border-radius:50px;cursor:pointer;transition:all .2s}
+.buy-btn-o:hover{background:var(--deep);color:#fff}
+.mini-trust{display:flex;gap:1rem;margin-top:1.3rem;font-size:.73rem;color:var(--gray);flex-wrap:wrap}
+.ali-link{display:inline-flex;align-items:center;gap:.4rem;font-size:.78rem;color:var(--mid);text-decoration:none;font-weight:600;margin-top:.7rem;border:1px solid var(--mint);padding:.35rem .8rem;border-radius:50px;background:var(--mint)}
+.ali-link:hover{background:var(--mid);color:#fff}
+
+/* ── BREADCRUMB ── */
+.breadcrumb{padding:.85rem 5%;font-size:.76rem;color:var(--gray);background:var(--white);border-bottom:1px solid var(--border)}
+.breadcrumb a{color:var(--mid);cursor:pointer;text-decoration:none}
+.breadcrumb span{margin:0 .3rem}
+
+/* ── CHECKOUT ── */
+.chk-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:2.5rem;max-width:960px;margin:0 auto;padding:3rem 5%}
+.chk-form h2{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:1.2rem}
+.fg{margin-bottom:1rem}
+.fg label{display:block;font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.32rem}
+.fg input,.fg select{width:100%;padding:.78rem .9rem;border:1.5px solid var(--border);border-radius:10px;font-family:inherit;font-size:.88rem;background:var(--white);outline:none;transition:border-color .2s}
+.fg input:focus,.fg select:focus{border-color:var(--mid)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+.ord-sum{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.7rem;position:sticky;top:82px}
+.ord-sum h3{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;margin-bottom:1.1rem;padding-bottom:.85rem;border-bottom:1px solid var(--border)}
+.ord-item{display:flex;justify-content:space-between;align-items:center;padding:.7rem 0;border-bottom:1px solid var(--border);font-size:.84rem}
+.ord-item-img{width:44px;height:44px;object-fit:cover;border-radius:6px;margin-right:.6rem;flex-shrink:0}
+.ord-item-nm{display:flex;align-items:center}
+.ord-total{display:flex;justify-content:space-between;padding-top:.85rem;font-weight:700;font-size:1rem}
+.place-btn{width:100%;background:var(--mid);color:#fff;border:none;padding:1rem;font-family:inherit;font-size:.92rem;font-weight:700;border-radius:50px;cursor:pointer;transition:all .2s;margin-top:1.2rem}
+.place-btn:hover{background:var(--forest);transform:translateY(-2px)}
+.sec-note{text-align:center;font-size:.7rem;color:var(--gray);margin-top:.7rem}
+
+/* ── PAGE HEADER ── */
+.pg-hdr{background:linear-gradient(135deg,var(--warm-lt),var(--sand));padding:3rem 5%;text-align:center;border-bottom:1px solid var(--border)}
+.pg-hdr h1{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,3.5vw,2.6rem);font-weight:700}
+.pg-hdr p{color:var(--gray);margin-top:.4rem;font-size:.88rem}
+
+/* ── CART ── */
+.cart-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:200}
+.cart-overlay.open{display:block}
+.cart-drawer{position:fixed;right:0;top:0;bottom:0;width:380px;background:var(--white);padding:1.8rem;overflow-y:auto;box-shadow:-8px 0 40px rgba(0,0,0,.13);transform:translateX(100%);transition:transform .3s ease;z-index:201}
+.cart-drawer.open{transform:translateX(0)}
+.cart-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;padding-bottom:.85rem;border-bottom:1px solid var(--border)}
+.cart-hdr h3{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700}
+.close-btn{background:none;border:none;font-size:1.35rem;cursor:pointer;color:var(--gray)}
+.cart-item{display:flex;align-items:center;gap:.85rem;padding:.85rem 0;border-bottom:1px solid var(--border)}
+.ci-img{width:52px;height:52px;object-fit:cover;border-radius:8px;flex-shrink:0}
+.ci-details{flex:1}
+.ci-name{font-weight:600;font-size:.82rem;margin-bottom:.18rem}
+.ci-price{color:var(--mid);font-weight:700;font-size:.82rem}
+.rm-btn{background:none;border:none;color:var(--gray);cursor:pointer;font-size:.9rem}
+.cart-total-row{display:flex;justify-content:space-between;padding:1.1rem 0;font-weight:700;font-size:.98rem}
+.chk-cart-btn{width:100%;background:var(--deep);color:#fff;border:none;padding:.98rem;font-family:inherit;font-size:.88rem;font-weight:700;border-radius:50px;cursor:pointer;transition:background .2s}
+.chk-cart-btn:hover{background:var(--mid)}
+.empty-cart{text-align:center;padding:2.5rem 0;color:var(--gray)}
+
+/* ── REVIEWS ── */
+.revs-sec{background:var(--white);border-top:1px solid var(--border);padding:4rem 5%}
+.rev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.1rem;margin-top:2rem}
+.rev-card{background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:1.2rem}
+.rev-top{display:flex;align-items:center;gap:.7rem;margin-bottom:.7rem}
+.rev-av{width:38px;height:38px;border-radius:50%;background:var(--mint);display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:700;color:var(--forest);flex-shrink:0}
+.rev-name{font-weight:700;font-size:.84rem}
+.rev-loc{font-size:.7rem;color:var(--gray)}
+.rev-stars{color:var(--warm);font-size:.82rem;margin-bottom:.45rem}
+.rev-text{font-size:.8rem;color:#444;line-height:1.6}
+.rev-prod{font-size:.68rem;color:var(--mid);font-weight:600;margin-top:.55rem;text-transform:uppercase;letter-spacing:.4px}
+
+/* ── NOTIF ── */
+.notif{position:fixed;bottom:1.8rem;right:1.8rem;background:var(--deep);color:#fff;padding:.85rem 1.3rem;border-radius:10px;font-size:.83rem;font-weight:500;transform:translateY(100px);opacity:0;transition:all .3s;z-index:300}
+.notif.show{transform:translateY(0);opacity:1}
+
+/* ── SUCCESS ── */
+.success-pg{text-align:center;padding:5.5rem 5%;max-width:560px;margin:0 auto}
+.suc-icon{font-size:4.2rem;margin-bottom:1.2rem}
+.success-pg h2{font-family:'Playfair Display',serif;font-size:2.1rem;font-weight:700;margin-bottom:.85rem}
+.success-pg p{color:var(--gray);line-height:1.7;font-size:.92rem}
+
+/* ── FOOTER ── */
+footer{background:var(--deep);color:rgba(255,255,255,.62);padding:3.5rem 5% 1.8rem}
+.ft-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;margin-bottom:2.5rem}
+.ft-brand h3{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:#fff;margin-bottom:.65rem}
+.ft-brand h3 span{color:var(--sage)}
+.ft-brand p{font-size:.78rem;line-height:1.7;max-width:220px}
+.ft-col h4{font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#fff;margin-bottom:.85rem}
+.ft-col ul{list-style:none}
+.ft-col li{margin-bottom:.48rem}
+.ft-col a{font-size:.78rem;color:rgba(255,255,255,.52);text-decoration:none;cursor:pointer;transition:color .2s}
+.ft-col a:hover{color:var(--sage)}
+.ft-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:1.2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.7rem}
+.ft-bottom p{font-size:.73rem}
+.pay-icons{display:flex;gap:.38rem}
+.pay-icon{background:rgba(255,255,255,.1);color:#fff;font-size:.62rem;font-weight:700;padding:.26rem .52rem;border-radius:4px}
+
+@media(max-width:768px){
+  .nav-links{display:none}
+  .about-grid,.prod-detail,.chk-grid{grid-template-columns:1fr}
+  .ft-grid{grid-template-columns:1fr 1fr}
+  .vals-grid{grid-template-columns:1fr}
+  .cart-drawer{width:100%}
+  .hero-stats{gap:1.2rem}
+  .fr{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="showPage('home')">Pure<span>Home</span> Store</div>
+  <ul class="nav-links">
+    <li><a onclick="showPage('home')">Home</a></li>
+    <li><a onclick="showPage('collections')">Shop</a></li>
+    <li><a onclick="showPage('about')">About</a></li>
+    <li><a onclick="showPage('shipping')">Shipping</a></li>
+    <li><a onclick="showPage('privacy')">Privacy</a></li>
+  </ul>
+  <button class="cart-btn" onclick="toggleCart()">🛒 Cart (<span id="cart-count">0</span>)</button>
+</nav>
+
+<!-- ════════ HOME ════════ -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-tag">🌿 Free Shipping Across Australia</div>
+      <h1>Your Home.<br><em>Purified.</em><br>Your Body, Restored.</h1>
+      <p>Premium massage devices, air purifiers & water filters — curated for Australian homeowners. Fast 3–20 day delivery, honest prices.</p>
+      <div class="hero-btns">
+        <button class="btn-p" onclick="showPage('collections')">Shop All Products</button>
+        <button class="btn-o" onclick="showPage('about')">Our Story</button>
+      </div>
+      <div class="hero-stats">
+        <div><div class="stat-n">22</div><div class="stat-l">Products</div></div>
+        <div><div class="stat-n">4.9★</div><div class="stat-l">Avg Rating</div></div>
+        <div><div class="stat-n">3–20</div><div class="stat-l">Days AU Delivery</div></div>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="sec-label">Browse By Category</div>
+    <div class="sec-title">Shop By Category</div>
+    <div class="cats-grid" id="home-cats"></div>
+  </section>
+
+  <section style="background:var(--white);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+    <div class="sec-label">Best Sellers</div>
+    <div class="sec-title">Loved By Australians</div>
+    <div class="prod-grid" id="home-featured"></div>
+  </section>
+
+  <div class="trust">
+    <div><div class="trust-icon">🚚</div><div class="trust-t">Free AU Shipping</div><div class="trust-s">On orders over $50</div></div>
+    <div><div class="trust-icon">↩️</div><div class="trust-t">30-Day Returns</div><div class="trust-s">Hassle-free returns</div></div>
+    <div><div class="trust-icon">🔒</div><div class="trust-t">Secure Payment</div><div class="trust-s">PayPal & Stripe</div></div>
+    <div><div class="trust-icon">🇦🇺</div><div class="trust-t">AU Support</div><div class="trust-s">Mon–Fri 9am–5pm AEST</div></div>
+  </div>
+
+  <div class="revs-sec">
+    <div class="sec-label">Customer Reviews</div>
+    <div class="sec-title">What Australians Are Saying</div>
+    <div class="rev-grid" id="home-reviews"></div>
+  </div>
+</div>
+
+<!-- ════════ COLLECTIONS ════════ -->
+<div id="page-collections" class="page">
+  <div class="pg-hdr"><h1>All Products</h1><p>Fast-delivery wellness essentials for Australian homes</p></div>
+  <section>
+    <div class="filter-row" id="filter-row"></div>
+    <div class="prod-grid" id="all-products-grid"></div>
+  </section>
+</div>
+
+<!-- ════════ ABOUT ════════ -->
+<div id="page-about" class="page">
+  <div class="about-hero">
+    <p class="sec-label">Our Story</p>
+    <h1>Born in Australia.<br>Built for Australian Homes.</h1>
+    <p style="color:var(--gray);margin-top:.9rem;max-width:540px;margin-left:auto;margin-right:auto;line-height:1.75;font-size:.93rem">Every product ships fast. Every price is honest. No 30-day waits. No inflated markups.</p>
+  </div>
+  <section>
+    <div class="about-grid">
+      <div class="about-txt">
+        <h2>Why We Started Pure Home Store</h2>
+        <p>Quality massage devices, air purifiers, and water filters in Australia were either overpriced, took weeks to arrive, or simply didn't live up to their claims.</p>
+        <p>We source directly from verified manufacturers, cut out every middleman, and test every product against strict delivery timeframes. If it doesn't arrive fast to Australia — it doesn't make our store.</p>
+        <button class="btn-p" onclick="showPage('collections')" style="margin-top:1rem">Shop Our Range</button>
+      </div>
+      <div class="about-visual">🌿</div>
+    </div>
+  </section>
+  <section style="background:var(--white);border-top:1px solid var(--border)">
+    <div style="text-align:center"><div class="sec-label">Values</div><div class="sec-title">What We Stand For</div></div>
+    <div class="vals-grid">
+      <div class="val-card"><div class="ico">⚡</div><h4>Fast Delivery</h4><p>All products ship to Australia in 3–20 days. No 30-day waits.</p></div>
+      <div class="val-card"><div class="ico">🇦🇺</div><h4>Australia First</h4><p>AU-focused curation. Local support. Delivery Aussies can count on.</p></div>
+      <div class="val-card"><div class="ico">💚</div><h4>Honest Pricing</h4><p>No hidden fees. Free shipping on orders over $50. Always.</p></div>
+    </div>
+  </section>
+</div>
+
+<!-- ════════ SHIPPING ════════ -->
+<div id="page-shipping" class="page">
+  <div class="pol-hero"><h1>Shipping Policy</h1><p>Last updated: January 2025</p></div>
+  <div class="pol-body">
+    <h2>🚚 Free Standard Shipping</h2>
+    <p>Free shipping on all orders over $50 AUD. Orders under $50 have a flat $6.95 fee.</p>
+    <h2>⏱️ Delivery Timeframes</h2>
+    <ul>
+      <li><strong>Metro (Sydney, Melbourne, Brisbane, Perth, Adelaide):</strong> 3–7 business days</li>
+      <li><strong>Regional areas:</strong> 7–14 business days</li>
+      <li><strong>Remote areas:</strong> 14–20 business days</li>
+    </ul>
+    <h2>📦 Order Processing</h2>
+    <p>Orders processed within 1–2 business days. Tracking number sent via email once dispatched.</p>
+    <h2>📮 Delivery Partners</h2>
+    <p>We ship via Australia Post, Sendle, and Aramex based on your location.</p>
+    <h2>✉️ Contact</h2>
+    <p><strong>support@purehomestore.com.au</strong> — reply within 1 business day.</p>
+  </div>
+</div>
+
+<!-- ════════ PRIVACY ════════ -->
+<div id="page-privacy" class="page">
+  <div class="pol-hero"><h1>Privacy Policy</h1><p>Last updated: January 2025</p></div>
+  <div class="pol-body">
+    <h2>1. Introduction</h2>
+    <p>Pure Home Store is committed to protecting your information under the Australian Privacy Act 1988 and the Australian Privacy Principles.</p>
+    <h2>2. Information We Collect</h2>
+    <ul><li>Name, email, phone number</li><li>Delivery and billing address</li><li>Purchase history</li></ul>
+    <h2>3. How We Use It</h2>
+    <ul><li>Process and fulfil orders</li><li>Send order and tracking updates</li><li>Marketing emails/SMS (with consent only, per Spam Act 2003)</li></ul>
+    <h2>4. Marketing</h2>
+    <p>Every communication includes an unsubscribe option. Reply STOP to opt out of SMS.</p>
+    <h2>5. Security</h2>
+    <p>All payments processed via PCI-compliant gateways. We never store card details.</p>
+    <h2>6. Contact</h2>
+    <p><strong>privacy@purehomestore.com.au</strong></p>
+  </div>
+</div>
+
+<!-- ════════ PRODUCT DETAIL ════════ -->
+<div id="page-product" class="page">
+  <div class="breadcrumb">
+    <a onclick="showPage('home')">Home</a><span>›</span>
+    <a onclick="showPage('collections')">Shop</a><span>›</span>
+    <span id="prod-bc">Product</span>
+  </div>
+  <div class="prod-detail">
+    <div>
+      <div class="gal-main"><img id="det-main-img" src="" alt="Product"></div>
+      <div class="gal-thumbs" id="det-thumbs"></div>
+    </div>
+    <div class="det-info">
+      <div class="prod-badge" id="det-badge"></div>
+      <h1 id="det-title"></h1>
+      <div class="stars">★★★★★ <span style="color:var(--gray);font-size:.78rem">(247 reviews)</span></div>
+      <div>
+        <span class="det-price" id="det-price"></span>
+        <span class="price-old" id="det-old"></span>
+      </div>
+      <div class="save-badge" id="det-save"></div>
+      <p class="det-desc" id="det-desc"></p>
+      <div class="feats" id="det-feats"></div>
+      <div class="qty-row">
+        <span class="qty-lbl">Qty:</span>
+        <button class="qty-btn" onclick="changeQty(-1)">−</button>
+        <span class="qty-n" id="qty-disp">1</span>
+        <button class="qty-btn" onclick="changeQty(1)">+</button>
+      </div>
+      <button class="buy-btn" onclick="buyNow()">Buy Now — Secure Checkout →</button>
+      <button class="buy-btn-o" onclick="addCurrentToCart()">Add to Cart</button>
+      <div><a class="ali-link" id="det-ali-link" href="#" target="_blank">🛒 View on AliExpress (Order Source)</a></div>
+      <div class="mini-trust"><span>✅ Free AU Shipping</span><span>↩️ 30-Day Returns</span><span>🔒 Secure</span></div>
+    </div>
+  </div>
+  <div class="revs-sec" style="margin:0">
+    <div class="sec-label">Reviews</div>
+    <div class="sec-title" style="font-size:1.55rem">Verified Purchases</div>
+    <div class="rev-grid" id="prod-reviews"></div>
+  </div>
+</div>
+
+<!-- ════════ CHECKOUT ════════ -->
+<div id="page-checkout" class="page">
+  <div class="pg-hdr"><h1>Secure Checkout</h1><p>🔒 100% protected</p></div>
+  <div class="chk-grid">
+    <div class="chk-form">
+      <h2>Contact</h2>
+      <div class="fg"><label>Email</label><input type="email" placeholder="you@example.com"></div>
+      <div class="fg"><label>Mobile</label><input type="tel" placeholder="+61 4xx xxx xxx"></div>
+      <h2 style="margin-top:1.5rem">Shipping Address</h2>
+      <div class="fr">
+        <div class="fg"><label>First Name</label><input type="text" placeholder="John"></div>
+        <div class="fg"><label>Last Name</label><input type="text" placeholder="Smith"></div>
+      </div>
+      <div class="fg"><label>Address</label><input type="text" placeholder="123 Main Street"></div>
+      <div class="fr">
+        <div class="fg"><label>City</label><input type="text" placeholder="Sydney"></div>
+        <div class="fg"><label>State</label><select><option>NSW</option><option>VIC</option><option>QLD</option><option>WA</option><option>SA</option><option>TAS</option><option>ACT</option><option>NT</option></select></div>
+      </div>
+      <div class="fg"><label>Postcode</label><input type="text" placeholder="2000"></div>
+      <h2 style="margin-top:1.5rem">Payment</h2>
+      <div style="display:flex;gap:.7rem;margin-bottom:1.2rem;flex-wrap:wrap">
+        <div style="padding:.6rem 1.3rem;border:2px solid var(--mid);border-radius:10px;font-weight:600;font-size:.82rem;cursor:pointer;background:#f0faf4">💳 Credit Card</div>
+        <div style="padding:.6rem 1.3rem;border:1.5px solid var(--border);border-radius:10px;font-weight:600;font-size:.82rem;cursor:pointer">🅿️ PayPal</div>
+      </div>
+      <div class="fg"><label>Card Number</label><input type="text" placeholder="1234 5678 9012 3456"></div>
+      <div class="fr">
+        <div class="fg"><label>Expiry</label><input type="text" placeholder="MM / YY"></div>
+        <div class="fg"><label>CVV</label><input type="text" placeholder="123"></div>
+      </div>
+    </div>
+    <div>
+      <div class="ord-sum">
+        <h3>Order Summary</h3>
+        <div id="chk-items"></div>
+        <div style="display:flex;justify-content:space-between;padding:.65rem 0;font-size:.83rem"><span>Subtotal</span><span id="sub-disp">$0</span></div>
+        <div style="display:flex;justify-content:space-between;padding:.65rem 0;font-size:.83rem;color:var(--mid);font-weight:600"><span>Shipping</span><span>FREE 🎉</span></div>
+        <div class="ord-total"><span>Total</span><span id="tot-disp">$0 AUD</span></div>
+        <button class="place-btn" onclick="placeOrder()">Place Order →</button>
+        <div class="sec-note">🔒 SSL encrypted. Safe & secure.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ SUCCESS ════════ -->
+<div id="page-success" class="page">
+  <div class="success-pg">
+    <div class="suc-icon">🎉</div>
+    <h2>Order Placed!</h2>
+    <p style="margin-top:.85rem;margin-bottom:2rem">Thank you for shopping with Pure Home Store! Confirmation email + tracking on the way. Delivery in 3–20 business days.</p>
+    <button class="btn-p" onclick="showPage('home')">Continue Shopping</button>
+  </div>
+</div>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-hdr"><h3>Your Cart 🛒</h3><button class="close-btn" onclick="toggleCart()">✕</button></div>
+  <div id="cart-items-list"></div>
+  <div id="cart-total-sec" style="display:none">
+    <div class="cart-total-row"><span>Total</span><span id="cart-total-price">$0 AUD</span></div>
+    <button class="chk-cart-btn" onclick="goToCheckout()">Proceed to Checkout →</button>
+  </div>
+</div>
+
+<div class="notif" id="notif">✅ Added to cart!</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-grid">
+    <div class="ft-brand"><h3>Pure<span>Home</span> Store</h3><p>Premium wellness products delivered fast across Australia. No gimmicks, no delays.</p></div>
+    <div class="ft-col"><h4>Shop</h4><ul>
+      <li><a onclick="showCategory('massage')">Massage Devices</a></li>
+      <li><a onclick="showCategory('air')">Air Purifiers</a></li>
+      <li><a onclick="showCategory('water')">Water Filters</a></li>
+    </ul></div>
+    <div class="ft-col"><h4>Info</h4><ul>
+      <li><a onclick="showPage('about')">About Us</a></li>
+      <li><a onclick="showPage('shipping')">Shipping</a></li>
+      <li><a onclick="showPage('privacy')">Privacy</a></li>
+    </ul></div>
+    <div class="ft-col"><h4>Support</h4><ul>
+      <li><a>support@purehomestore.com.au</a></li>
+      <li><a>Mon–Fri 9am–5pm AEST</a></li>
+      <li><a>30-Day Returns</a></li>
+    </ul></div>
+  </div>
+  <div class="ft-bottom">
+    <p>© 2025 Pure Home Store. All rights reserved.</p>
+    <div class="pay-icons"><div class="pay-icon">VISA</div><div class="pay-icon">MC</div><div class="pay-icon">AMEX</div><div class="pay-icon">PayPal</div></div>
+  </div>
+</footer>
+
+<script>
+// ══════════ PRODUCT DATA WITH REAL IMAGES ══════════
+const products = [
+  {id:0,cat:'massage',badge:'⭐ Best Seller',name:'HOMASA Neck Shoulder Massager Portable',shortDesc:'Heated neck & shoulder massager, adjustable vibration. 2–10 day AU delivery.',desc:'Professional portable neck & shoulder massager with adjustable heat and multiple vibration modes. Perfect for desk workers and athletes needing daily relief.',feats:['Adjustable heat settings','Multiple vibration modes','Ergonomic wrap-around design','Battery powered — portable','2–10 day AU delivery','30-day money back'],price:158.74,oldPrice:220,link:'https://www.aliexpress.com/item/1005011933871631.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/S9b47a0f963234c8f9bdddd532ea34ddf6.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S922bc9c2d3394616853c26e4bf8c28b1O.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S7f73005d7ebe4d4b997c1a5676c036a5W.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Sarah M.',loc:'Sydney, NSW',stars:5,text:'Arrived fast and the heat function is incredible after a long desk day.'},{name:'James K.',loc:'Melbourne, VIC',stars:5,text:'Bought for my wife and she loves it. Very sturdy, works exactly as described.'}]},
+  {id:1,cat:'massage',badge:'🔥 Trending',name:'Shiatsu Full Body Massage Mat with Heat',shortDesc:'Full body shiatsu mat, 10 nodes, heat therapy. 3–10 day AU delivery.',desc:'Full-body massage mat with 10 shiatsu nodes covering back, waist, thighs, and calves. Built-in heat for deep tissue relaxation.',feats:['10 shiatsu massage nodes','Full back + legs coverage','Built-in heat therapy','Adjustable pillow heights','3–10 day AU delivery','Auto shut-off safety'],price:172.14,oldPrice:240,link:'https://www.aliexpress.com/item/1005011894660050.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/Se3e2d3bd0ee24239a603bf274d64a522E.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S6a29d462030f422b8ea16b4ce411daa3P.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/Sd12ffab512d8434aafd92c8b6b246542S.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Michelle T.',loc:'Brisbane, QLD',stars:5,text:'This mat is a game changer. Back pain significantly reduced after one week.'},{name:'David R.',loc:'Perth, WA',stars:4,text:'Great product, arrived in 8 days. Heat function is a bonus on cold mornings.'}]},
+  {id:2,cat:'massage',badge:'💆 Pain Relief',name:'Period Care Heating Belly Belt Massager',shortDesc:'Fast-heating wearable belt, 3 temps, 4 vibration modes, USB rechargeable. 8–15 days.',desc:'Wearable heating belt for menstrual cramp relief. 3-second rapid heating, 3 temperature settings, 4 vibration intensities. USB rechargeable and lightweight.',feats:['3-second rapid heating','3 temp settings (50–60°C)','4 vibration intensities','USB rechargeable','Lightweight 0.14kg','8–15 day AU delivery'],price:17.83,oldPrice:29,link:'https://www.aliexpress.com/item/1005005140277683.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/Sa155fd87faf34a098e6b38677e1d719as.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/Sdb4902cb948b435699ef614af5349b3bN.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S2abf453edb87427992a7b9f8aa668c04p.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Emma L.',loc:'Adelaide, SA',stars:5,text:'Works perfectly for period pain. Discreet enough to wear under clothes. Highly recommend.'}]},
+  {id:3,cat:'massage',badge:'💪 Muscle Relief',name:'Relivex Manual Massage Tool for Muscle Relief',shortDesc:'Manual trigger point tool, ABS material, no batteries needed. 3–10 days.',desc:'Simple manual trigger point massage tool for myofascial release. Compact ABS build, no batteries — perfect for travel and daily use.',feats:['Manual trigger point tool','Compact & travel-friendly','Durable ABS material','No batteries required','3–10 day AU delivery','Works on all muscle groups'],price:7.10,oldPrice:15,link:'https://www.aliexpress.com/item/1005009304653165.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/S255254f71dde4ac3a0b42cb677a2b507D.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S059d59f56bb64111b5614437874c527cq.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/Sce911cf5ba534232a051cfb30f1f1d68N.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Tom W.',loc:'Hobart, TAS',stars:4,text:'Simple but effective. Great for targeting specific muscle knots.'}]},
+  {id:4,cat:'massage',badge:'🏆 Office Essential',name:'3-in-1 Electric Lumbar Support Back Massager',shortDesc:'Massage + heat + airbag lumbar lift, adjustable height, for office & car. 7–15 days.',desc:'Three-in-one lumbar pillow combining massage, hot compress, and airbag lumbar lift. Ideal for office chairs and car seats.',feats:['3 functions: massage + heat + airbag','Adjustable height','59×28×8cm compact size','7–15 day AU delivery','Suitable for office & car','Memory foam + electronics'],price:83.28,oldPrice:120,link:'https://www.aliexpress.com/item/1005010227543014.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/Sec172de886d94c32800fac3f266cc9f7l.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S04f9c68283a942f381be642a4256e4ca0.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/Sf06b073145df44b69ee3e6813e7bf39dm.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Karen B.',loc:'Sydney, NSW',stars:5,text:'Perfect for my home office. Lower back pain is gone after just one week.'},{name:'Peter H.',loc:'Canberra, ACT',stars:5,text:'Solid build. The airbag lift function is unique and really helpful.'}]},
+  {id:5,cat:'massage',badge:'⭐ Best Value',name:'SucceBuy Mini Massage Gun Deep Tissue',shortDesc:'4 speeds, 40W, 2500mAh, CE certified, compact gym-bag size. 3–10 days.',desc:'Professional mini massage gun, 4 speed levels, 40W motor, 2500mAh battery. CE certified. Compact enough for any gym bag.',feats:['4 adjustable speed levels','40W powerful motor','2500mAh rechargeable battery','CE certified','3–10 day AU delivery','Compact gym-bag size'],price:71.18,oldPrice:100,link:'https://www.aliexpress.com/item/1005010102791581.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/Sba6583034cd04427be893852827bf1afY.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S1e8ae8693eff459b8b2f548ea118add3g.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S7d341da2567449ecb69740cea5aff652y.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Chris A.',loc:'Melbourne, VIC',stars:5,text:'Compact but powerful! Great for post-gym recovery. Arrived in 7 days.'},{name:'Natalie F.',loc:'Gold Coast, QLD',stars:5,text:'Best value massage gun. The 4 speeds cover everything from light to deep.'}]},
+  {id:6,cat:'massage',badge:'🔥 Pro Grade',name:'30 Level Fascia Massage Gun Deep Tissue',shortDesc:'30 speed levels, electric powered, ABS build by FODRK. 3–10 days.',desc:'Professional fascia gun with 30 adjustable levels for precise intensity control. Electric-powered ABS body targeting deep tissue.',feats:['30 adjustable speed levels','Deep tissue percussive therapy','Durable ABS construction','Electric powered','3–10 day AU delivery','Suitable for all fitness levels'],price:73.96,oldPrice:110,link:'https://www.aliexpress.com/item/1005010718145781.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/S9b47a0f963234c8f9bdddd532ea34ddf6.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S922bc9c2d3394616853c26e4bf8c28b1O.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S7f73005d7ebe4d4b997c1a5676c036a5W.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Luke P.',loc:'Perth, WA',stars:5,text:'30 levels give incredible control. Much better than basic 3-speed guns.'}]},
+  {id:7,cat:'massage',badge:'🏆 Physiotherapy',name:'Electric Shoulder Massage Belt Cordless',shortDesc:'LED display, 5000mAh, 3 heat settings (40–75°C), fits chest 27–55". 7–15 days.',desc:'Cordless shoulder belt with LED display, 5000mAh battery for 3hr continuous use. Three heat settings (40–75°C). CE/FCC/RoHS certified.',feats:['LED temp & battery display','5000mAh — 3hr continuous','3 heat settings: 40–75°C','Fits chest 27"–55"','CE/FCC/RoHS certified','7–15 day AU delivery'],price:48.96,oldPrice:75,link:'https://www.aliexpress.com/item/1005003344372976.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/S8494e955a1e64849ae77d06aae2842558.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/Sef4991683e104a688d742f40cba90394k.png_640x640.png_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S7c7fab9f90604e5193b868792ae83be2P.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Helen C.',loc:'Brisbane, QLD',stars:5,text:'Fixed my frozen shoulder after weeks of pain. Heat + vibration combination is perfect.'}]},
+  {id:8,cat:'massage',badge:'💆 Deep Recovery',name:'Fascia Gun Deep Tissue 6 Speed Massager',shortDesc:'3200 RPM, <44dB quiet, Type-C charging, 3 heads, smart chip. 7–15 days.',desc:'Smart percussion gun with 3200 RPM motor, under 44dB quiet operation, intelligent chip, and Type-C charging. Includes 3 massage heads.',feats:['3200 RPM motor','<44dB ultra-quiet','Intelligent auto-adjust chip','Type-C USB rechargeable','3 interchangeable heads','7–15 day AU delivery'],price:33.57,oldPrice:55,link:'https://www.aliexpress.com/item/1005010806507345.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/S8c30c9577661428aa039439d85ee92827.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S3487d1e123e74a68aec97af644259d0aV.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/Sda6f3ec567f645cbbbca55bd3bcc34d30.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Amy S.',loc:'Sydney, NSW',stars:5,text:'So quiet! I use it in the office and nobody even notices. Brilliant.'},{name:'Ben O.',loc:'Melbourne, VIC',stars:5,text:'Type-C charging is so convenient. Battery lasts a long time.'}]},
+  {id:9,cat:'massage',badge:'🔥 Athlete Pick',name:'Portable Fascia Vibration Massage Gun',shortDesc:'Battery powered, CE & RoHS certified, ergonomic grip. 7–15 days.',desc:'Portable rechargeable fascia gun. CE and RoHS certified. Ergonomic one-hand grip for full body muscle treatment.',feats:['CE & RoHS certified','Rechargeable battery','Ergonomic one-hand grip','Full body coverage','7–15 day AU delivery','PAQIN professional brand'],price:92.80,oldPrice:140,link:'https://www.aliexpress.com/item/1005007343958003.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/S5a405c21c45e48299e80fa82fff25987G.jpeg_640x640q75.jpeg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S03c90a4640444a0a9677de41a99355ee3.jpeg_640x640q75.jpeg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S67af32e78cd54cfeba4ee4204bc939f92.jpeg_640x640q75.jpeg_.avif'],reviews:[{name:'Jake M.',loc:'Wollongong, NSW',stars:5,text:'I\'m a PT and recommend this to all my clients. Great build and performance.'}]},
+  {id:10,cat:'massage',badge:'⭐ 11-IN-1',name:'11-in-1 Electric Massage Gun 99 Levels',shortDesc:'99 speed levels, 11 attachments, covers all muscle groups. 7–15 days.',desc:'Ultimate 99-level massage gun with 11 attachments covering all major muscle groups including shoulders, arms, back, waist, thighs, calves, and feet.',feats:['99 adjustable speed levels','11 interchangeable attachments','Covers 11 body muscle groups','Professional composite build','7–15 day AU delivery','30-day return guarantee'],price:72.70,oldPrice:110,link:'https://www.aliexpress.com/item/1005010661575985.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/S326c4519b93b46fb8536accf412968dbt.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S59af8b77809c4c8eb5b8e61e041f1d3bb.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S11661ce8b8974952b130cf8ca0c14a1da.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Olivia J.',loc:'Perth, WA',stars:5,text:'99 levels and 11 heads — this covers everything. Best massage gun I\'ve made.'},{name:'Ryan C.',loc:'Cairns, QLD',stars:5,text:'Arrived well packaged and works perfectly. Variety of attachments is a big plus.'}]},
+  {id:11,cat:'air',badge:'💡 USB Plug-In',name:'60M Negative Ion Mini USB Air Purifier',shortDesc:'60 million negative ions/cm³, USB plug-in, removes dust & odours. 3–10 days.',desc:'Ultra-compact negative ion purifier releasing 60 million ions/cm³. Eliminates odours, PM2.5, dust and allergens. Plug into any USB port.',feats:['60 million negative ions/cm³','USB plug & play','Removes PM2.5, odours, smoke','Car, office, bedroom use','Silent operation','3–10 day AU delivery'],price:27.98,oldPrice:45,link:'https://www.aliexpress.com/item/1005010373786981.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/Sfcebd88bb7764d9e887f9f71ff58659cL.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S5de2dbb56f3f485a9110c6c073896a0e8.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/Se8bb41ee78844c22ae7b5d8e630a19b4h.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Tina L.',loc:'Sydney, NSW',stars:5,text:'Perfect for my car and office. So small you barely notice it but air is noticeably fresher.'},{name:'Greg W.',loc:'Melbourne, VIC',stars:4,text:'Does what it claims. Easy — just plug it in and forget.'}]},
+  {id:12,cat:'air',badge:'🏠 H13 HEPA',name:'Chuboor Air Purifier H13 HEPA Filter',shortDesc:'True H13 HEPA, 185m³/h CADR, 21–30m² coverage, 23dB sleep mode. 3–10 days.',desc:'H13 True HEPA removes 99.97% of particles, 83% formaldehyde, 93% benzene. 185m³/h CADR. 23dB sleep mode. App & touch control.',feats:['True H13 HEPA filter','185 m³/h CADR','Covers 21–30m²','23dB sleep mode','Touch + APP control','3–10 day AU delivery'],price:128.82,oldPrice:190,link:'https://www.aliexpress.com/item/1005011865858355.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/S67988aa19cfc4de6bd6a12ec83c9b03aL.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/Sb621070b40f140efb004e71ed8b0453a5.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S82337e15e9664b9a8f268103ff6fcc45G.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Fiona K.',loc:'Adelaide, SA',stars:5,text:'Bought for my asthma — made a huge difference. Sleep mode is genuinely silent.'},{name:'Nathan G.',loc:'Brisbane, QLD',stars:5,text:'App shows real-time air quality. Very reassuring. Excellent product.'}]},
+  {id:13,cat:'air',badge:'🔧 Multi-Use',name:'Portable Ozone Air Purifier Deodorizer',shortDesc:'Ozone deodorizer for fridge, car, bathroom. USB or battery powered. 3–10 days.',desc:'Compact ozone purifier eliminates odours in fridges, cabinets, cars, and bathrooms. USB or battery powered, two timed operating modes.',feats:['Ozone deodorization','Works in fridge, car, bathroom','USB or 3×AAA battery','Two timed modes','85×22mm compact','3–10 day AU delivery'],price:38.58,oldPrice:60,link:'https://www.aliexpress.com/item/1005010267239223.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/Sf82657b1ef5841cf9ddedb338b3595f4y.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S402bb224a4e84c0daae75d272378ce15E.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/Sd531366ed1cc4539ade5b64c6043ce8dF.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Paula M.',loc:'Sydney, NSW',stars:4,text:'Brilliant for my fridge. The food odour issue is completely gone now.'}]},
+  {id:14,cat:'air',badge:'🚗 Car & Home',name:'Mini USB Air Humidifier Car Purifier',shortDesc:'260ml, USB rechargeable, 6hr runtime, coloured nightlight. 3–10 days.',desc:'Portable 260ml USB humidifier with coloured nightlight. Works 6 hours continuously. Great for bedroom, office, car, and travel.',feats:['260ml water capacity','6-hour runtime','USB rechargeable','Coloured nightlight','Portable travel size','3–10 day AU delivery'],price:30.78,oldPrice:50,link:'https://www.aliexpress.com/item/1005010684997229.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/S621ad323a2bf40d1acaae9061e6cb112H.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/Sdc158ae0d1ef43279c5cd02e7d3fcc59V.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Lisa R.',loc:'Geelong, VIC',stars:5,text:'Use this in my car every day. Keeps air fresh and the nightlight is a nice bonus.'}]},
+  {id:15,cat:'air',badge:'🌟 2-in-1',name:'2-in-1 Air Purifier & Humidifier H13 HEPA',shortDesc:'H13 HEPA + humidifier, 35–60m² coverage, 25dB, CE/ROHS. 7–15 days.',desc:'Advanced 2-in-1 purifier and humidifier with MI-CYLONE technology and H13 True HEPA. Removes 99.97% particles. Covers large 35–60m².',feats:['2-in-1 purify + humidify','H13 HEPA 99.97% removal','Covers 35–60m²','25dB ultra-quiet','CE & ROHS certified','7–15 day AU delivery'],price:155.98,oldPrice:230,link:'https://www.aliexpress.com/item/1005007552718905.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/Sab89bc1601064529a2e7d5e47c7db0d5I.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/Sff419fb9c7d840ed8bdef322a041a51cr.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S350d3a64449843d1a3f9db257a74ece5r.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Daniel P.',loc:'Parramatta, NSW',stars:5,text:'Perfect for my open-plan living area. Air quality has improved dramatically.'},{name:'Rose T.',loc:'Melbourne, VIC',stars:5,text:'2-in-1 is perfect for dry winters. Would buy again.'}]},
+  {id:16,cat:'water',badge:'🏠 Whole House',name:'Whole House Spin Down Sediment Filter',shortDesc:'316 stainless steel, 250 mesh, for water tank/tower. 3–10 days.',desc:'Food-grade 316 stainless steel spin-down sediment filter. 250 mesh precision removes rust and sediment from whole house water.',feats:['316 food-grade stainless steel','250 mesh filtration','Compatible with all AU pipe sizes','Easy cold-water installation','3–10 day AU delivery','Protects all appliances'],price:31.58,oldPrice:55,link:'https://www.aliexpress.com/item/1005010266902584.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/S3ead05444d4f49bda26f79ff552ac763I.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S0c45d0aa60a14d6aad064ecb757266a0B.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Steve H.',loc:'Perth, WA',stars:5,text:'Installed in 30 minutes. Visible sediment collecting in the bowl. Excellent.'}]},
+  {id:17,cat:'water',badge:'🏕️ Portable',name:'Personal Water Purifier Survival Filter Straw',shortDesc:'UF + carbon fiber, 45g, 19cm, for hiking, camping & emergency. 7–15 days.',desc:'Lightweight 45g survival straw filter using UF + activated carbon. Perfect for hiking, camping, travel, and emergency preparedness.',feats:['UF + activated carbon','Ultra-light 45g','19×3cm compact','Hiking & camping ready','Emergency preparedness','7–15 day AU delivery'],price:15.13,oldPrice:28,link:'https://www.aliexpress.com/item/1005010763398452.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/S3ad1633d25a04a35810e577a40ad2011w.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S2c5a65c33c714b7abf817534f3e6ad82c.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S0344c4ed61594726b01872a109aff819H.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Chris N.',loc:'Townsville, QLD',stars:5,text:'Took this hiking and it worked perfectly. Lightweight and easy to carry.'}]},
+  {id:18,cat:'water',badge:'⚡ High Flow',name:'SucceBuy Spin Down Filter 40 Micron 4T/H',shortDesc:'40μm, 4T/H high flow, siphon backwash, 316L stainless, CB certified. 3–10 days.',desc:'High-performance spin-down filter with 40 micron filtration and 4T/H flow rate. Siphon backwash, pressure gauge, 316L stainless. CB certified.',feats:['40μm fine filtration','4T/H high flow','Siphon backwash system','Visible pressure gauge','316L stainless screen','3–10 day AU delivery'],price:207.38,oldPrice:300,link:'https://www.aliexpress.com/item/1005010149620008.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/S858405d5a19047c28e26693663cd2ec3v.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S34958c4772fe41e2838d04f1a2e31002f.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Michael B.',loc:'Brisbane, QLD',stars:5,text:'Perfect for our rural property. Flow rate excellent, backwash system makes maintenance easy.'},{name:'Wendy S.',loc:'Murray Bridge, SA',stars:5,text:'CB certified, performs as described. Very happy.'}]},
+  {id:19,cat:'water',badge:'🌊 Alkaline',name:'Alkaline Water Ionizer Machine 5-Plate',shortDesc:'5 platinum-plate ionizer, pH 5–9.5, Japanese technology. 10–20 days.',desc:'Premium alkaline water ionizer with 5 platinum-coated electrodes using Japanese technology. Produces pH 5–9.5 water. 60-minute continuous operation.',feats:['5 platinum-coated electrodes','pH 5–9.5 range','Japanese technology','4 alkaline water levels','Table/wall installation','10–20 day AU delivery'],price:707.84,oldPrice:999,link:'https://www.aliexpress.com/item/1005007377999164.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/Sf9ab5c619da54f2a9bd19a0a4302cbc9z.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/Sd8c32d040bf345ea9f904cfda34b5a486.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/Se9d8571ea16b4d448f50b4baae8b1afc9.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Angela K.',loc:'Sydney, NSW',stars:5,text:'Worth every cent. Water quality is noticeably different. I feel more hydrated.'},{name:'Frank L.',loc:'Melbourne, VIC',stars:4,text:'Great machine. Setup was straightforward.'}]},
+  {id:20,cat:'water',badge:'🔧 Tap Filter',name:'Faucet Water Filter 5-Stage Ceramic',shortDesc:'5-stage ceramic, 6L/min, CE/RoHS/UL certified, no electricity. 10–20 days.',desc:'5-stage ceramic tap filter removes rust and bacteria at 6L/min. CE, RoHS, and UL certified. No electricity needed. Kitchen/wall/table install.',feats:['5-stage ceramic filtration','6L/min flow rate','CE + RoHS + UL certified','No electricity required','Kitchen/wall mount','10–20 day AU delivery'],price:41.46,oldPrice:70,link:'https://www.aliexpress.com/item/1005003248513738.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/H872cbf943c484223a20caffd3c8e7cecA.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/Sa296f0c08e7344ca8d1d91e7a5e8fb17k.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/Sa64023b871c148d89844861f2901e6046.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Mary L.',loc:'Hobart, TAS',stars:4,text:'Easy to install and the water tastes cleaner. Good value for 5-stage filter.'}]},
+  {id:21,cat:'water',badge:'🔋 Rechargeable',name:'Electric Portable Water Pump Dispenser USB',shortDesc:'Fits 4.5–18.9L bottles, 1200mAh 30–40 day battery, BPA-free. 7–15 days.',desc:'USB rechargeable pump for universal gallon bottles. BPA-free food-grade materials. One-touch operation. 1200mAh battery lasts 30–40 days.',feats:['Fits 4.5L–18.9L bottles','1200mAh — 30–40 day battery','BPA-free food-grade','One-touch silent operation','Micro USB charging','7–15 day AU delivery'],price:7.10,oldPrice:18,link:'https://www.aliexpress.com/item/1005005447572799.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/Sae1d0e976ccd4b8aa13cabfd39c6ff7eM.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S6e9ea86975074f2a908f491ef608e639r.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S9d9c0bcd088a44a3af24a141184cfaf6t.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Jan T.',loc:'Cairns, QLD',stars:5,text:'No more lifting heavy water bottles. Charges quickly and lasts weeks.'}]}
+];
+
+const catImgs = {
+  massage: products[5].imgs[0],
+  air: products[12].imgs[0],
+  water: products[18].imgs[0]
+};
+
+const allReviews = [
+  {name:'Sarah M.',loc:'Sydney, NSW',stars:5,text:'The massage gun arrived in 7 days and it\'s incredible. Best purchase this year!',prod:'Massage & Recovery'},
+  {name:'James K.',loc:'Melbourne, VIC',stars:5,text:'Air purifier has made a huge difference for my family\'s allergies.',prod:'Air Purifiers'},
+  {name:'Emma L.',loc:'Adelaide, SA',stars:5,text:'The water filter is easy to install and the water tastes so much better.',prod:'Water Filters'},
+  {name:'David R.',loc:'Perth, WA',stars:5,text:'Great store. Products arrived fast and exactly as described.',prod:'Pure Home Store'},
+  {name:'Michelle T.',loc:'Brisbane, QLD',stars:5,text:'The full body massage mat is incredible. My back pain has completely gone.',prod:'Massage & Recovery'},
+  {name:'Chris A.',loc:'Hobart, TAS',stars:4,text:'Good products and shipping was faster than expected. Really happy.',prod:'Pure Home Store'},
+];
+
+let cart=[], currentProd=0, currentQty=1;
+
+// ── PAGE NAV ──
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='home') renderHome();
+  if(id==='collections') renderCollections('all');
+  if(id==='checkout') renderCheckout();
+}
+function showCategory(cat){ showPage('collections'); setTimeout(()=>filterProducts(cat),50); }
+
+// ── RENDER ──
+function renderHome(){
+  // Categories
+  document.getElementById('home-cats').innerHTML = [
+    {cat:'massage',label:'Massage & Recovery',count:11},
+    {cat:'air',label:'Air Purifiers',count:5},
+    {cat:'water',label:'Water Filters',count:6}
+  ].map(c=>`<div class="cat-card" onclick="showCategory('${c.cat}')">
+    <img class="cat-img" src="${catImgs[c.cat]}" alt="${c.label}" onerror="this.style.display='none'">
+    <div class="cat-name">${c.label}</div>
+    <div class="cat-count">${c.count} Products</div>
+  </div>`).join('');
+  // Featured
+  document.getElementById('home-featured').innerHTML=[0,5,12,18].map(i=>prodCard(products[i])).join('');
+  // Reviews
+  document.getElementById('home-reviews').innerHTML=allReviews.map(revCard).join('');
+}
+
+function prodCard(p){
+  const imgs = p.imgs || [];
+  const mainImg = imgs[0] || '';
+  const thumbsHtml = imgs.slice(0,3).map((img,i)=>`<img class="prod-thumb${i===0?' active':''}" src="${img}" alt="" onclick="switchCardImg(event,'${img}')" onerror="this.style.display='none'">`).join('');
+  return `<div class="prod-card" onclick="showProduct(${p.id})">
+    <div class="prod-img-wrap">
+      <img src="${mainImg}" alt="${p.name}" onerror="this.style.background='var(--mint)';this.style.display='none'">
+    </div>
+    ${thumbsHtml ? `<div class="prod-thumb-row">${thumbsHtml}</div>` : ''}
+    <div class="prod-info">
+      <div class="prod-badge">${p.badge}</div>
+      <div class="prod-name">${p.name}</div>
+      <div class="prod-desc">${p.shortDesc}</div>
+      <div class="prod-foot">
+        <div class="prod-price">$${p.price.toFixed(2)} <small>$${p.oldPrice}</small></div>
+        <button class="add-btn" onclick="event.stopPropagation();addToCart(${p.id})">Add +</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function switchCardImg(e, imgSrc){
+  e.stopPropagation();
+  const card = e.target.closest('.prod-card');
+  const mainImg = card.querySelector('.prod-img-wrap img');
+  if(mainImg){ mainImg.style.opacity='0'; setTimeout(()=>{mainImg.src=imgSrc;mainImg.style.opacity='1';},150); }
+  card.querySelectorAll('.prod-thumb').forEach(t=>t.classList.remove('active'));
+  e.target.classList.add('active');
+}
+
+function renderCollections(filter='all'){
+  const list = filter==='all' ? products : products.filter(p=>p.cat===filter);
+  document.getElementById('all-products-grid').innerHTML = list.map(p=>prodCard(p)).join('');
+  if(!document.getElementById('filter-row').children.length){
+    const cats=[['all','All (22)'],['massage','💆 Massage (11)'],['air','🌬️ Air Purifiers (5)'],['water','💧 Water Filters (6)']];
+    document.getElementById('filter-row').innerHTML=cats.map(([c,l])=>`<button class="filt-btn${c==='all'?' active':''}" id="fb-${c}" onclick="filterProducts('${c}')">${l}</button>`).join('');
+  }
+}
+
+function filterProducts(cat){
+  const list = cat==='all' ? products : products.filter(p=>p.cat===cat);
+  document.getElementById('all-products-grid').innerHTML = list.map(p=>prodCard(p)).join('');
+  document.querySelectorAll('.filt-btn').forEach(b=>b.classList.remove('active'));
+  const btn = document.getElementById('fb-'+cat);
+  if(btn) btn.classList.add('active');
+}
+
+function revCard(r){
+  return `<div class="rev-card">
+    <div class="rev-top">
+      <div class="rev-av">${r.name[0]}</div>
+      <div><div class="rev-name">${r.name}</div><div class="rev-loc">📍 ${r.loc}</div></div>
+    </div>
+    <div class="rev-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div>
+    <div class="rev-text">${r.text}</div>
+    <div class="rev-prod">${r.prod}</div>
+  </div>`;
+}
+
+// ── PRODUCT DETAIL ──
+function showProduct(id){
+  currentProd=id; currentQty=1;
+  const p=products[id];
+  // main image
+  const mainImg = document.getElementById('det-main-img');
+  mainImg.src = p.imgs[0] || '';
+  mainImg.alt = p.name;
+  // thumbnails
+  document.getElementById('det-thumbs').innerHTML = p.imgs.map((img,i)=>
+    `<img class="gal-thumb${i===0?' active':''}" src="${img}" onclick="switchDetImg('${img}',this)" onerror="this.style.display='none'">`
+  ).join('');
+  // info
+  document.getElementById('det-badge').textContent = p.badge;
+  document.getElementById('det-title').textContent = p.name;
+  document.getElementById('prod-bc').textContent = p.name;
+  document.getElementById('det-price').textContent = `$${p.price.toFixed(2)} AUD`;
+  document.getElementById('det-old').textContent = `Was $${p.oldPrice}`;
+  const save = p.oldPrice - p.price;
+  const pct = Math.round(save/p.oldPrice*100);
+  document.getElementById('det-save').textContent = `You save $${save.toFixed(2)} (${pct}% off)`;
+  document.getElementById('det-desc').textContent = p.desc;
+  document.getElementById('det-feats').innerHTML = p.feats.map(f=>
+    `<div class="feat-item"><span class="feat-check">✓</span> ${f}</div>`).join('');
+  document.getElementById('det-ali-link').href = p.link;
+  document.getElementById('qty-disp').textContent = 1;
+  document.getElementById('prod-reviews').innerHTML = (p.reviews||[]).map(revCard).join('');
+  showPage('product');
+}
+
+function switchDetImg(src, el){
+  const mainImg = document.getElementById('det-main-img');
+  mainImg.style.opacity='0';
+  setTimeout(()=>{ mainImg.src=src; mainImg.style.opacity='1'; }, 150);
+  document.querySelectorAll('.gal-thumb').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function changeQty(d){ currentQty=Math.max(1,currentQty+d); document.getElementById('qty-disp').textContent=currentQty; }
+
+// ── CART ──
+function addToCart(id){
+  const ex=cart.find(i=>i.id===id);
+  if(ex) ex.qty++; else cart.push({id,qty:1});
+  updateCartCount(); showNotif('✅ Added to cart!');
+}
+function addCurrentToCart(){
+  const ex=cart.find(i=>i.id===currentProd);
+  if(ex) ex.qty+=currentQty; else cart.push({id:currentProd,qty:currentQty});
+  updateCartCount(); showNotif('✅ Added to cart!');
+}
+function buyNow(){ addCurrentToCart(); goToCheckout(); }
+function removeItem(id){ cart=cart.filter(i=>i.id!==id); updateCartCount(); renderCartDrawer(); }
+function updateCartCount(){ document.getElementById('cart-count').textContent=cart.reduce((s,i)=>s+i.qty,0); }
+
+function renderCartDrawer(){
+  const list=document.getElementById('cart-items-list');
+  const ts=document.getElementById('cart-total-sec');
+  if(!cart.length){
+    list.innerHTML=`<div class="empty-cart"><div style="font-size:2.5rem;margin-bottom:.7rem">🛒</div><p>Your cart is empty</p></div>`;
+    ts.style.display='none'; return;
+  }
+  ts.style.display='block';
+  let total=0;
+  list.innerHTML=cart.map(item=>{
+    const p=products[item.id];
+    const sub=p.price*item.qty; total+=sub;
+    return `<div class="cart-item">
+      <img class="ci-img" src="${p.imgs[0]}" alt="${p.name}" onerror="this.style.background='var(--mint)'">
+      <div class="ci-details">
+        <div class="ci-name">${p.name.substring(0,38)}${p.name.length>38?'…':''}</div>
+        <div class="ci-price">$${sub.toFixed(2)} AUD × ${item.qty}</div>
+      </div>
+      <button class="rm-btn" onclick="removeItem(${item.id})">✕</button>
+    </div>`;
+  }).join('');
+  document.getElementById('cart-total-price').textContent=`$${total.toFixed(2)} AUD`;
+}
+
+function toggleCart(){
+  document.getElementById('cart-overlay').classList.toggle('open');
+  document.getElementById('cart-drawer').classList.toggle('open');
+  renderCartDrawer();
+}
+function goToCheckout(){
+  document.getElementById('cart-overlay').classList.remove('open');
+  document.getElementById('cart-drawer').classList.remove('open');
+  showPage('checkout');
+}
+
+// ── CHECKOUT ──
+function renderCheckout(){
+  let total=0;
+  document.getElementById('chk-items').innerHTML=cart.map(item=>{
+    const p=products[item.id];
+    const sub=p.price*item.qty; total+=sub;
+    return `<div class="ord-item">
+      <div class="ord-item-nm">
+        <img class="ord-item-img" src="${p.imgs[0]}" alt="" onerror="this.style.background='var(--mint)'">
+        <div><div style="font-weight:600;font-size:.8rem">${p.name.substring(0,32)}…</div>
+        <div style="font-size:.7rem;color:var(--gray)">Qty: ${item.qty}</div></div>
+      </div>
+      <div style="font-weight:600;font-size:.84rem">$${sub.toFixed(2)}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('sub-disp').textContent=`$${total.toFixed(2)}`;
+  document.getElementById('tot-disp').textContent=`$${total.toFixed(2)} AUD`;
+}
+function placeOrder(){ cart=[]; updateCartCount(); showPage('success'); }
+
+// ── NOTIFICATION ──
+function showNotif(msg){
+  const el=document.getElementById('notif');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+// ── INIT ──
+renderHome();
+</script>
+</body>
+</html>
