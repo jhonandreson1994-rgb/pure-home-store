@@ -2,38 +2,151 @@ backend:
   name: git-gateway
   branch: main
 
-# Media files ke liye
 media_folder: "uploads"
 public_folder: "/uploads"
 
-# Slug settings
 slug:
   encoding: "ascii"
   clean_accents: true
 
 collections:
-  # Blog posts
-  - name: "blog"
-    label: "Blog Posts"
-    folder: "blog"
-    create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Publish Date", name: "date", widget: "datetime" }
-      - { label: "Featured Image", name: "image", widget: "image", required: false }
-      - { label: "Body", name: "body", widget: "markdown" }
 
-  # Site settings — yahan tum website ki text content edit kar sako ge
-  - name: "settings"
-    label: "Site Settings"
+  - name: "site_settings"
+    label: "⚙️ Site Settings"
     files:
       - file: "content/site-settings.json"
-        label: "General Settings"
-        name: "site_settings"
+        label: "Site Settings"
+        name: "settings"
         fields:
-          - { label: "Site Title", name: "title", widget: "string", default: "Pure Home Store" }
-          - { label: "Hero Heading Line 1", name: "hero_line1", widget: "string", default: "Your Home." }
-          - { label: "Hero Heading Line 2", name: "hero_line2", widget: "string", default: "Purified." }
-          - { label: "Hero Subtitle", name: "hero_subtitle", widget: "text" }
-          - { label: "Hero Tag Text", name: "hero_tag", widget: "string", default: "🌿 Free Shipping Across Australia" }
+          - {label: "Store Name", name: "storeName", widget: "string"}
+          - {label: "Hero Tag (top badge)", name: "heroTag", widget: "string"}
+          - {label: "Hero Heading Line 1", name: "heroLine1", widget: "string"}
+          - {label: "Hero Heading Line 2 (italic green)", name: "heroLine2", widget: "string"}
+          - {label: "Hero Heading Line 3", name: "heroLine3", widget: "string"}
+          - {label: "Hero Subtitle", name: "heroSubtitle", widget: "text"}
+          - {label: "Hero Button 1 (orange)", name: "heroBtnShop", widget: "string"}
+          - {label: "Hero Button 2 (outline)", name: "heroBtnAbout", widget: "string"}
+          - {label: "Stat 1 — Number", name: "stat1Number", widget: "string"}
+          - {label: "Stat 1 — Label", name: "stat1Label", widget: "string"}
+          - {label: "Stat 2 — Number", name: "stat2Number", widget: "string"}
+          - {label: "Stat 2 — Label", name: "stat2Label", widget: "string"}
+          - {label: "Stat 3 — Number", name: "stat3Number", widget: "string"}
+          - {label: "Stat 3 — Label", name: "stat3Label", widget: "string"}
+          - {label: "Trust 1 Icon", name: "trust1Icon", widget: "string"}
+          - {label: "Trust 1 Title", name: "trust1Title", widget: "string"}
+          - {label: "Trust 1 Subtitle", name: "trust1Sub", widget: "string"}
+          - {label: "Trust 2 Icon", name: "trust2Icon", widget: "string"}
+          - {label: "Trust 2 Title", name: "trust2Title", widget: "string"}
+          - {label: "Trust 2 Subtitle", name: "trust2Sub", widget: "string"}
+          - {label: "Trust 3 Icon", name: "trust3Icon", widget: "string"}
+          - {label: "Trust 3 Title", name: "trust3Title", widget: "string"}
+          - {label: "Trust 3 Subtitle", name: "trust3Sub", widget: "string"}
+          - {label: "Trust 4 Icon", name: "trust4Icon", widget: "string"}
+          - {label: "Trust 4 Title", name: "trust4Title", widget: "string"}
+          - {label: "Trust 4 Subtitle", name: "trust4Sub", widget: "string"}
+          - {label: "Footer Tagline", name: "footerTagline", widget: "text"}
+          - {label: "Support Email", name: "supportEmail", widget: "string"}
+          - {label: "Support Hours", name: "supportHours", widget: "string"}
+          - {label: "About Hero Title", name: "aboutHeroTitle", widget: "string"}
+          - {label: "About Hero Subtitle", name: "aboutHeroSub", widget: "text"}
+          - {label: "About Body Title", name: "aboutBodyTitle", widget: "string"}
+          - {label: "About Body Paragraph 1", name: "aboutBodyP1", widget: "text"}
+          - {label: "About Body Paragraph 2", name: "aboutBodyP2", widget: "text"}
+          - {label: "Value 1 Icon", name: "val1Icon", widget: "string"}
+          - {label: "Value 1 Title", name: "val1Title", widget: "string"}
+          - {label: "Value 1 Text", name: "val1Text", widget: "text"}
+          - {label: "Value 2 Icon", name: "val2Icon", widget: "string"}
+          - {label: "Value 2 Title", name: "val2Title", widget: "string"}
+          - {label: "Value 2 Text", name: "val2Text", widget: "text"}
+          - {label: "Value 3 Icon", name: "val3Icon", widget: "string"}
+          - {label: "Value 3 Title", name: "val3Title", widget: "string"}
+          - {label: "Value 3 Text", name: "val3Text", widget: "text"}
+          - {label: "Shipping Page Content", name: "shippingContent", widget: "markdown"}
+          - {label: "Privacy Page Content", name: "privacyContent", widget: "markdown"}
+
+  - name: "products"
+    label: "📦 Products"
+    files:
+      - file: "content/products.json"
+        label: "All Products"
+        name: "all_products"
+        fields:
+          - label: "Products"
+            name: ""
+            widget: "list"
+            fields:
+              - {label: "ID", name: "id", widget: "number"}
+              - label: "Category"
+                name: "cat"
+                widget: "select"
+                options:
+                  - {label: "Massage & Recovery", value: "massage"}
+                  - {label: "Air Purifiers", value: "air"}
+                  - {label: "Water Filters", value: "water"}
+              - {label: "Badge", name: "badge", widget: "string"}
+              - {label: "Product Name", name: "name", widget: "string"}
+              - {label: "Short Description (card)", name: "shortDesc", widget: "string"}
+              - {label: "Full Description", name: "desc", widget: "text"}
+              - label: "Features"
+                name: "feats"
+                widget: "list"
+                field: {label: "Feature", name: "feat", widget: "string"}
+              - {label: "Selling Price AUD", name: "price", widget: "number", value_type: "float", step: 0.01}
+              - {label: "Old/Was Price AUD", name: "oldPrice", widget: "number", value_type: "float", step: 0.01}
+              - {label: "AliExpress Link", name: "link", widget: "string"}
+              - label: "Image URLs"
+                name: "imgs"
+                widget: "list"
+                field: {label: "Image URL", name: "url", widget: "string"}
+              - label: "Reviews"
+                name: "reviews"
+                widget: "list"
+                fields:
+                  - {label: "Reviewer Name", name: "name", widget: "string"}
+                  - {label: "Location", name: "loc", widget: "string"}
+                  - {label: "Stars 1-5", name: "stars", widget: "number", min: 1, max: 5}
+                  - {label: "Review Text", name: "text", widget: "text"}
+              - label: "Status"
+                name: "status"
+                widget: "select"
+                options:
+                  - {label: "Active (visible)", value: "active"}
+                  - {label: "Draft (hidden)", value: "draft"}
+
+  - name: "reviews"
+    label: "⭐ Homepage Reviews"
+    files:
+      - file: "content/reviews.json"
+        label: "Homepage Reviews"
+        name: "all_reviews"
+        fields:
+          - label: "Reviews"
+            name: ""
+            widget: "list"
+            fields:
+              - {label: "Name", name: "name", widget: "string"}
+              - {label: "Location (e.g. Sydney, NSW)", name: "loc", widget: "string"}
+              - {label: "Stars 1-5", name: "stars", widget: "number", min: 1, max: 5}
+              - {label: "Review Text", name: "text", widget: "text"}
+              - {label: "Product Category", name: "prod", widget: "string"}
+
+  - name: "blog"
+    label: "📝 Blog Posts"
+    folder: "blog"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Publish Date", name: "date", widget: "datetime"}
+      - {label: "Author", name: "author", widget: "string", default: "Pure Home Team"}
+      - {label: "Category", name: "category", widget: "string"}
+      - {label: "Featured Image URL", name: "image", widget: "string", required: false}
+      - {label: "Excerpt", name: "excerpt", widget: "text", required: false}
+      - label: "Status"
+        name: "status"
+        widget: "select"
+        default: "published"
+        options:
+          - {label: "Published", value: "published"}
+          - {label: "Draft", value: "draft"}
+      - {label: "Body", name: "body", widget: "markdown"}

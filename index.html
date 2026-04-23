@@ -514,8 +514,129 @@ footer{background:var(--deep);color:rgba(255,255,255,.62);padding:3.5rem 5% 1.8r
 </footer>
 
 <script>
-// ══════════ PRODUCT DATA WITH REAL IMAGES ══════════
-const products = [
+// ══════════ LOAD DATA FROM CONTENT JSON FILES ══════════
+let products = [];
+let allReviews = [];
+let siteSettings = {};
+let dataLoaded = false;
+
+async function loadAllContent() {
+  try {
+    const [prodsRes, reviewsRes, settingsRes] = await Promise.all([
+      fetch('/content/products.json?v=' + Date.now()),
+      fetch('/content/reviews.json?v=' + Date.now()),
+      fetch('/content/site-settings.json?v=' + Date.now())
+    ]);
+    products = await prodsRes.json();
+    allReviews = await reviewsRes.json();
+    siteSettings = await settingsRes.json();
+    // Filter only active products
+    products = products.filter(p => p.status !== 'draft');
+    dataLoaded = true;
+    applySettings();
+    renderHome();
+  } catch(e) {
+    console.warn('Using fallback data:', e);
+    products = FALLBACK_PRODUCTS;
+    allReviews = FALLBACK_REVIEWS;
+    dataLoaded = true;
+    renderHome();
+  }
+}
+
+function applySettings() {
+  const s = siteSettings;
+  if (!s) return;
+  // Hero
+  const heroTag = document.querySelector('.hero-tag');
+  if (heroTag && s.heroTag) heroTag.textContent = s.heroTag;
+  const heroH1 = document.querySelector('.hero h1');
+  if (heroH1 && s.heroLine1) heroH1.innerHTML = `${s.heroLine1}<br><em>${s.heroLine2||''}</em><br>${s.heroLine3||''}`;
+  const heroP = document.querySelector('.hero p');
+  if (heroP && s.heroSubtitle) heroP.textContent = s.heroSubtitle;
+  const btnShop = document.querySelector('.btn-p');
+  if (btnShop && s.heroBtnShop) btnShop.textContent = s.heroBtnShop;
+  const btnAbout = document.querySelector('.btn-o');
+  if (btnAbout && s.heroBtnAbout) btnAbout.textContent = s.heroBtnAbout;
+  // Stats
+  const statNs = document.querySelectorAll('.stat-n');
+  const statLs = document.querySelectorAll('.stat-l');
+  if (statNs[0] && s.stat1Number) statNs[0].textContent = s.stat1Number;
+  if (statLs[0] && s.stat1Label) statLs[0].textContent = s.stat1Label;
+  if (statNs[1] && s.stat2Number) statNs[1].textContent = s.stat2Number;
+  if (statLs[1] && s.stat2Label) statLs[1].textContent = s.stat2Label;
+  if (statNs[2] && s.stat3Number) statNs[2].textContent = s.stat3Number;
+  if (statLs[2] && s.stat3Label) statLs[2].textContent = s.stat3Label;
+  // Trust bar
+  const tIcons = document.querySelectorAll('.trust-icon');
+  const tTitles = document.querySelectorAll('.trust-t');
+  const tSubs = document.querySelectorAll('.trust-s');
+  const trustData = [
+    {icon: s.trust1Icon, title: s.trust1Title, sub: s.trust1Sub},
+    {icon: s.trust2Icon, title: s.trust2Title, sub: s.trust2Sub},
+    {icon: s.trust3Icon, title: s.trust3Title, sub: s.trust3Sub},
+    {icon: s.trust4Icon, title: s.trust4Title, sub: s.trust4Sub}
+  ];
+  trustData.forEach((t, i) => {
+    if (tIcons[i] && t.icon) tIcons[i].textContent = t.icon;
+    if (tTitles[i] && t.title) tTitles[i].textContent = t.title;
+    if (tSubs[i] && t.sub) tSubs[i].textContent = t.sub;
+  });
+  // Footer
+  const ftBrandP = document.querySelector('.ft-brand p');
+  if (ftBrandP && s.footerTagline) ftBrandP.textContent = s.footerTagline;
+  const ftSupport = document.querySelectorAll('.ft-col')[2];
+  if (ftSupport && s.supportEmail) {
+    const links = ftSupport.querySelectorAll('a');
+    if (links[0]) links[0].textContent = s.supportEmail;
+    if (links[1] && s.supportHours) links[1].textContent = s.supportHours;
+  }
+  // About page
+  if (s.aboutHeroTitle) {
+    const ah1 = document.querySelector('#page-about .about-hero h1');
+    if (ah1) ah1.innerHTML = s.aboutHeroTitle.replace('. ', '.<br>');
+  }
+  if (s.aboutHeroSub) {
+    const ahp = document.querySelector('#page-about .about-hero p');
+    if (ahp) ahp.textContent = s.aboutHeroSub;
+  }
+  if (s.aboutBodyTitle) {
+    const abt = document.querySelector('.about-txt h2');
+    if (abt) abt.textContent = s.aboutBodyTitle;
+  }
+  const aboutPs = document.querySelectorAll('.about-txt p');
+  if (aboutPs[0] && s.aboutBodyP1) aboutPs[0].textContent = s.aboutBodyP1;
+  if (aboutPs[1] && s.aboutBodyP2) aboutPs[1].textContent = s.aboutBodyP2;
+  // Values
+  const valCards = document.querySelectorAll('.val-card');
+  const vals = [
+    {icon: s.val1Icon, title: s.val1Title, text: s.val1Text},
+    {icon: s.val2Icon, title: s.val2Title, text: s.val2Text},
+    {icon: s.val3Icon, title: s.val3Title, text: s.val3Text}
+  ];
+  valCards.forEach((card, i) => {
+    if (!vals[i]) return;
+    const ico = card.querySelector('.ico');
+    const h4 = card.querySelector('h4');
+    const p = card.querySelector('p');
+    if (ico && vals[i].icon) ico.textContent = vals[i].icon;
+    if (h4 && vals[i].title) h4.textContent = vals[i].title;
+    if (p && vals[i].text) p.textContent = vals[i].text;
+  });
+  // Shipping page
+  if (s.shippingContent) {
+    const shipBody = document.querySelector('#page-shipping .pol-body');
+    if (shipBody) shipBody.innerHTML = s.shippingContent;
+  }
+  // Privacy page
+  if (s.privacyContent) {
+    const privBody = document.querySelector('#page-privacy .pol-body');
+    if (privBody) privBody.innerHTML = s.privacyContent;
+  }
+}
+
+// ══════════ FALLBACK PRODUCT DATA (used only if fetch fails) ══════════
+const FALLBACK_PRODUCTS = [
   {id:0,cat:'massage',badge:'⭐ Best Seller',name:'HOMASA Neck Shoulder Massager Portable',shortDesc:'Heated neck & shoulder massager, adjustable vibration. 2–10 day AU delivery.',desc:'Professional portable neck & shoulder massager with adjustable heat and multiple vibration modes. Perfect for desk workers and athletes needing daily relief.',feats:['Adjustable heat settings','Multiple vibration modes','Ergonomic wrap-around design','Battery powered — portable','2–10 day AU delivery','30-day money back'],price:158.74,oldPrice:220,link:'https://www.aliexpress.com/item/1005011933871631.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/S9b47a0f963234c8f9bdddd532ea34ddf6.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S922bc9c2d3394616853c26e4bf8c28b1O.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S7f73005d7ebe4d4b997c1a5676c036a5W.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Sarah M.',loc:'Sydney, NSW',stars:5,text:'Arrived fast and the heat function is incredible after a long desk day.'},{name:'James K.',loc:'Melbourne, VIC',stars:5,text:'Bought for my wife and she loves it. Very sturdy, works exactly as described.'}]},
   {id:1,cat:'massage',badge:'🔥 Trending',name:'Shiatsu Full Body Massage Mat with Heat',shortDesc:'Full body shiatsu mat, 10 nodes, heat therapy. 3–10 day AU delivery.',desc:'Full-body massage mat with 10 shiatsu nodes covering back, waist, thighs, and calves. Built-in heat for deep tissue relaxation.',feats:['10 shiatsu massage nodes','Full back + legs coverage','Built-in heat therapy','Adjustable pillow heights','3–10 day AU delivery','Auto shut-off safety'],price:172.14,oldPrice:240,link:'https://www.aliexpress.com/item/1005011894660050.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/Se3e2d3bd0ee24239a603bf274d64a522E.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S6a29d462030f422b8ea16b4ce411daa3P.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/Sd12ffab512d8434aafd92c8b6b246542S.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Michelle T.',loc:'Brisbane, QLD',stars:5,text:'This mat is a game changer. Back pain significantly reduced after one week.'},{name:'David R.',loc:'Perth, WA',stars:4,text:'Great product, arrived in 8 days. Heat function is a bonus on cold mornings.'}]},
   {id:2,cat:'massage',badge:'💆 Pain Relief',name:'Period Care Heating Belly Belt Massager',shortDesc:'Fast-heating wearable belt, 3 temps, 4 vibration modes, USB rechargeable. 8–15 days.',desc:'Wearable heating belt for menstrual cramp relief. 3-second rapid heating, 3 temperature settings, 4 vibration intensities. USB rechargeable and lightweight.',feats:['3-second rapid heating','3 temp settings (50–60°C)','4 vibration intensities','USB rechargeable','Lightweight 0.14kg','8–15 day AU delivery'],price:17.83,oldPrice:29,link:'https://www.aliexpress.com/item/1005005140277683.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/Sa155fd87faf34a098e6b38677e1d719as.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/Sdb4902cb948b435699ef614af5349b3bN.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S2abf453edb87427992a7b9f8aa668c04p.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Emma L.',loc:'Adelaide, SA',stars:5,text:'Works perfectly for period pain. Discreet enough to wear under clothes. Highly recommend.'}]},
@@ -540,20 +661,22 @@ const products = [
   {id:21,cat:'water',badge:'🔋 Rechargeable',name:'Electric Portable Water Pump Dispenser USB',shortDesc:'Fits 4.5–18.9L bottles, 1200mAh 30–40 day battery, BPA-free. 7–15 days.',desc:'USB rechargeable pump for universal gallon bottles. BPA-free food-grade materials. One-touch operation. 1200mAh battery lasts 30–40 days.',feats:['Fits 4.5L–18.9L bottles','1200mAh — 30–40 day battery','BPA-free food-grade','One-touch silent operation','Micro USB charging','7–15 day AU delivery'],price:7.10,oldPrice:18,link:'https://www.aliexpress.com/item/1005005447572799.html',imgs:['https://ae-pic-a1.aliexpress-media.com/kf/Sae1d0e976ccd4b8aa13cabfd39c6ff7eM.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S6e9ea86975074f2a908f491ef608e639r.jpg_640x640q75.jpg_.avif','https://ae-pic-a1.aliexpress-media.com/kf/S9d9c0bcd088a44a3af24a141184cfaf6t.jpg_640x640q75.jpg_.avif'],reviews:[{name:'Jan T.',loc:'Cairns, QLD',stars:5,text:'No more lifting heavy water bottles. Charges quickly and lasts weeks.'}]}
 ];
 
-const catImgs = {
-  massage: products[5].imgs[0],
-  air: products[12].imgs[0],
-  water: products[18].imgs[0]
-};
-
-const allReviews = [
-  {name:'Sarah M.',loc:'Sydney, NSW',stars:5,text:'The massage gun arrived in 7 days and it\'s incredible. Best purchase this year!',prod:'Massage & Recovery'},
-  {name:'James K.',loc:'Melbourne, VIC',stars:5,text:'Air purifier has made a huge difference for my family\'s allergies.',prod:'Air Purifiers'},
-  {name:'Emma L.',loc:'Adelaide, SA',stars:5,text:'The water filter is easy to install and the water tastes so much better.',prod:'Water Filters'},
-  {name:'David R.',loc:'Perth, WA',stars:5,text:'Great store. Products arrived fast and exactly as described.',prod:'Pure Home Store'},
-  {name:'Michelle T.',loc:'Brisbane, QLD',stars:5,text:'The full body massage mat is incredible. My back pain has completely gone.',prod:'Massage & Recovery'},
-  {name:'Chris A.',loc:'Hobart, TAS',stars:4,text:'Good products and shipping was faster than expected. Really happy.',prod:'Pure Home Store'},
+const FALLBACK_REVIEWS = [
+  {name:'Sarah M.',loc:'Sydney, NSW',stars:5,text:"The massage gun arrived in 7 days and it's incredible. Best purchase this year!",prod:'Massage & Recovery'},
+  {name:'James K.',loc:'Melbourne, VIC',stars:5,text:"Air purifier has made a huge difference for my family's allergies.",prod:'Air Purifiers'},
+  {name:'Emma L.',loc:'Adelaide, SA',stars:5,text:"The water filter is easy to install and the water tastes so much better.",prod:'Water Filters'},
+  {name:'David R.',loc:'Perth, WA',stars:5,text:"Great store. Products arrived fast and exactly as described.",prod:'Pure Home Store'},
+  {name:'Michelle T.',loc:'Brisbane, QLD',stars:5,text:"The full body massage mat is incredible. My back pain has completely gone.",prod:'Massage & Recovery'},
+  {name:'Chris A.',loc:'Hobart, TAS',stars:4,text:"Good products and shipping was faster than expected. Really happy.",prod:'Pure Home Store'},
 ];
+
+function getCatImgs() {
+  return {
+    massage: (products.find(p=>p.cat==='massage')||{imgs:['']}).imgs[0],
+    air: (products.find(p=>p.cat==='air')||{imgs:['']}).imgs[0],
+    water: (products.find(p=>p.cat==='water')||{imgs:['']}).imgs[0]
+  };
+}
 
 let cart=[], currentProd=0, currentQty=1;
 
@@ -570,20 +693,33 @@ function showCategory(cat){ showPage('collections'); setTimeout(()=>filterProduc
 
 // ── RENDER ──
 function renderHome(){
-  // Categories
-  document.getElementById('home-cats').innerHTML = [
-    {cat:'massage',label:'Massage & Recovery',count:11},
-    {cat:'air',label:'Air Purifiers',count:5},
-    {cat:'water',label:'Water Filters',count:6}
-  ].map(c=>`<div class="cat-card" onclick="showCategory('${c.cat}')">
-    <img class="cat-img" src="${catImgs[c.cat]}" alt="${c.label}" onerror="this.style.display='none'">
-    <div class="cat-name">${c.label}</div>
-    <div class="cat-count">${c.count} Products</div>
-  </div>`).join('');
-  // Featured
-  document.getElementById('home-featured').innerHTML=[0,5,12,18].map(i=>prodCard(products[i])).join('');
+  const catImgs = getCatImgs();
+  // Categories — dynamic from products
+  const cats = [
+    {cat:'massage',label:'Massage & Recovery'},
+    {cat:'air',label:'Air Purifiers'},
+    {cat:'water',label:'Water Filters'}
+  ];
+  document.getElementById('home-cats').innerHTML = cats.map(c=>{
+    const count = products.filter(p=>p.cat===c.cat).length;
+    return `<div class="cat-card" onclick="showCategory('${c.cat}')">
+      <img class="cat-img" src="${catImgs[c.cat]}" alt="${c.label}" onerror="this.style.display='none'">
+      <div class="cat-name">${c.label}</div>
+      <div class="cat-count">${count} Products</div>
+    </div>`;
+  }).join('');
+  // Featured — first product from each category + first overall
+  const featured = [];
+  ['massage','air','water'].forEach(cat => {
+    const p = products.find(p=>p.cat===cat);
+    if(p) featured.push(p);
+  });
+  if(featured.length < 4) {
+    products.slice(0,4-featured.length).forEach(p=>{ if(!featured.includes(p)) featured.push(p); });
+  }
+  document.getElementById('home-featured').innerHTML = featured.slice(0,4).filter(Boolean).map(p=>prodCard(p)).join('');
   // Reviews
-  document.getElementById('home-reviews').innerHTML=allReviews.map(revCard).join('');
+  document.getElementById('home-reviews').innerHTML = allReviews.map(revCard).join('');
 }
 
 function prodCard(p){
@@ -620,7 +756,16 @@ function renderCollections(filter='all'){
   const list = filter==='all' ? products : products.filter(p=>p.cat===filter);
   document.getElementById('all-products-grid').innerHTML = list.map(p=>prodCard(p)).join('');
   if(!document.getElementById('filter-row').children.length){
-    const cats=[['all','All (22)'],['massage','💆 Massage (11)'],['air','🌬️ Air Purifiers (5)'],['water','💧 Water Filters (6)']];
+    const total = products.length;
+    const mCount = products.filter(p=>p.cat==='massage').length;
+    const aCount = products.filter(p=>p.cat==='air').length;
+    const wCount = products.filter(p=>p.cat==='water').length;
+    const cats=[
+      ['all',`All (${total})`],
+      ['massage',`💆 Massage (${mCount})`],
+      ['air',`🌬️ Air Purifiers (${aCount})`],
+      ['water',`💧 Water Filters (${wCount})`]
+    ];
     document.getElementById('filter-row').innerHTML=cats.map(([c,l])=>`<button class="filt-btn${c==='all'?' active':''}" id="fb-${c}" onclick="filterProducts('${c}')">${l}</button>`).join('');
   }
 }
@@ -648,7 +793,7 @@ function revCard(r){
 // ── PRODUCT DETAIL ──
 function showProduct(id){
   currentProd=id; currentQty=1;
-  const p=products[id];
+  const p=products.find(x=>x.id===id)||products[0];
   // main image
   const mainImg = document.getElementById('det-main-img');
   mainImg.src = p.imgs[0] || '';
@@ -710,7 +855,7 @@ function renderCartDrawer(){
   ts.style.display='block';
   let total=0;
   list.innerHTML=cart.map(item=>{
-    const p=products[item.id];
+    const p=products.find(x=>x.id===item.id)||{};
     const sub=p.price*item.qty; total+=sub;
     return `<div class="cart-item">
       <img class="ci-img" src="${p.imgs[0]}" alt="${p.name}" onerror="this.style.background='var(--mint)'">
@@ -739,7 +884,7 @@ function goToCheckout(){
 function renderCheckout(){
   let total=0;
   document.getElementById('chk-items').innerHTML=cart.map(item=>{
-    const p=products[item.id];
+    const p=products.find(x=>x.id===item.id)||{};
     const sub=p.price*item.qty; total+=sub;
     return `<div class="ord-item">
       <div class="ord-item-nm">
@@ -763,7 +908,7 @@ function showNotif(msg){
 }
 
 // ── INIT ──
-renderHome();
+loadAllContent();
 </script>
 <script>
   if (window.netlifyIdentity) {
